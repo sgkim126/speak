@@ -12,6 +12,14 @@ function getVoices(speechSynthesis) {
   });
 }
 
+function makeVoiceOption(voice, document) {
+  var option = document.createElement('option');
+  option.dataset['lang'] = voice.lang;
+  option.dataset['name'] = voice.name;
+  option.textContent = voice.name;
+  return option;
+}
+
 document.body.onload = function() {
   if (!isSpeechSupport(window)) {
     return;
@@ -22,5 +30,13 @@ document.body.onload = function() {
   var supported = document.getElementById('supported');
   supported.classList.remove('hide');
 
+  var voiceOptions = document.getElementById('voice_options');
+
   var voices = getVoices(window.speechSynthesis);
+  voices.then(function(voices) {
+    voices.map(function (voice) { return makeVoiceOption(voice, document); })
+    .forEach(function (option) {
+      voiceOptions.appendChild(option);
+    });
+  });
 };
