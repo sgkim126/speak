@@ -7,6 +7,14 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 </head>
 <body>
-<div id='main'></div>
+<div id='main' style='position: absolute; top: 0; left: 0; right: 0; bottom: 0;'>
+  <div style='position: absolute; top: 0; left: 0; right: 0; bottom: 0;' id='not_supported' class='jumbotron'>
+    <h1>This browser is not supported</h1>
+  </div>
+  <div style='position: absolute; top: 0; left: 0; right: 0; bottom: 0;' id='supported' class='hide'>
+    <h1>This browser is not supported</h1>
+  </div>
+</div>
+<script src='./speak.js'></script>
 </body>
 </html>
