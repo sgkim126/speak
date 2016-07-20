@@ -20,6 +20,24 @@ function makeVoiceOption(voice, document) {
   return option;
 }
 
+function speakIt(text, voiceName, speechSynthesis) {
+  return new Promise(function (resolve, reject) {
+    if (text === '') {
+      reject(new Error('no text'));
+    }
+
+    var utterance = new SpeechSynthesisUtterance(text)
+    utterance.voice = speechSynthesis.getVoices().find(function (voice) {
+      return voice.name === voiceName;
+    });
+    speechSynthesis.speak(utterance);
+
+    utterance.onend = function() {
+      resolve();
+    };
+  });
+}
+
 document.body.onload = function() {
   if (!isSpeechSupport(window)) {
     return;
@@ -39,4 +57,14 @@ document.body.onload = function() {
       voiceOptions.appendChild(option);
     });
   });
+
+  var speakItForm = document.getElementById('speak-it-form');
+  var speakItInput = document.getElementById('speak-it-input');
+  speakItForm.onsubmit = function(e) {
+    e.preventDefault();
+
+    var text = speakItInput.value;
+    var voice = voiceOptions.value;
+    var speak = speakIt(text, voice, window.speechSynthesis);
+  };
 };
