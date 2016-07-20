@@ -38,6 +38,16 @@ function speakIt(text, voiceName, speechSynthesis) {
   });
 }
 
+function enable(tag) {
+  tag.disabled = false;
+  tag.classList.remove('disabled');
+};
+
+function disable(tag) {
+  tag.disabled = true;
+  tag.classList.add('disabled');
+};
+
 document.body.onload = function() {
   if (!isSpeechSupport(window)) {
     return;
@@ -60,11 +70,22 @@ document.body.onload = function() {
 
   var speakItForm = document.getElementById('speak-it-form');
   var speakItInput = document.getElementById('speak-it-input');
+  var speakItSubmit = document.getElementById('speak-it-submit');
   speakItForm.onsubmit = function(e) {
     e.preventDefault();
 
     var text = speakItInput.value;
     var voice = voiceOptions.value;
+
+    disable(voiceOptions);
+    disable(speakItInput);
+    disable(speakItSubmit);
     var speak = speakIt(text, voice, window.speechSynthesis);
+    speak.catch(function() {
+    }).then(function () {
+      enable(voiceOptions);
+      enable(speakItInput);
+      enable(speakItSubmit);
+    });
   };
 };
