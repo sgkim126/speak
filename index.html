@@ -1,0 +1,41 @@
+<!DOCTYPE html5>
+<html>
+<head>
+<meta charset='utf-8' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speak!</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+</head>
+<body>
+<div id='main' style='position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow:hidden'>
+  <div style='position: absolute; top: 0; left: 0; right: 0; bottom: 0;' id='not_supported' class='jumbotron'>
+    <h1>This browser is not supported</h1>
+  </div>
+  <div style='position: absolute; top: 0; left: 0; right: 0; bottom: 0;' id='supported' class='hide'>
+    <div class='row'>
+      <div class='col-xs-12'>
+        <form class='input-group' id='speak-it-form'>
+          <input type='text' class='form-control' placeholder='Speak it' id='speak-it-input' autocomplete='off' />
+          <span class="input-group-btn">
+            <button class='btn' type='submit' title='Speak' id='speak-it-submit'>Speak</button>
+          </span>
+        </form>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='list-group' id='history-list'>
+      </div>
+    </div>
+    <div style='position: absolute; bottom: 0;' class='row'>
+      <div class='col-xs-6 btn-group form-group'>
+        <select id='voice_options' class='form-control'></select>
+      </div>
+      <div class='col-xs-6'>
+        <input id='volume' type='range' min='0' max='100' step='1' value='100' />
+      </div>
+    </div>
+  </div>
+</div>
+<script src='./speak.js'></script>
+</body>
+</html>
