@@ -20,7 +20,15 @@ function makeVoiceOption(voice, document) {
   return option;
 }
 
-function speakIt(text, voiceName, speechSynthesis) {
+function getVolume(volumeDOM) {
+  var volume = volumeDOM.value;
+  if (volume == null) {
+    return 1;
+  }
+  return volume / 100;
+}
+
+function speakIt(text, voiceName, speechSynthesis, volume) {
   return new Promise(function (resolve, reject) {
     if (text === '') {
       reject(new Error('no text'));
@@ -30,6 +38,7 @@ function speakIt(text, voiceName, speechSynthesis) {
     utterance.voice = speechSynthesis.getVoices().find(function (voice) {
       return voice.name === voiceName;
     });
+    utterance.volume = volume;
     speechSynthesis.speak(utterance);
 
     utterance.onend = function() {
@@ -71,16 +80,18 @@ document.body.onload = function() {
   var speakItForm = document.getElementById('speak-it-form');
   var speakItInput = document.getElementById('speak-it-input');
   var speakItSubmit = document.getElementById('speak-it-submit');
+  var volumeInput = document.getElementById('volume');
 
-  var doms = [ voiceOptions, speakItInput, speakItSubmit ];
+  var doms = [ voiceOptions, speakItInput, speakItSubmit, volume ];
   speakItForm.onsubmit = function(e) {
     e.preventDefault();
 
     var text = speakItInput.value;
     var voice = voiceOptions.value;
+    var volume = getVolume(volumeInput);
 
     doms.map(disable);
-    var speak = speakIt(text, voice, window.speechSynthesis);
+    var speak = speakIt(text, voice, window.speechSynthesis, volume);
     speak.catch(function(e) {
       console.log(e);
     }).then(function () {
