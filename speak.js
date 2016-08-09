@@ -44,6 +44,9 @@ function speakIt(text, voiceName, speechSynthesis, volume) {
     utterance.onend = function() {
       resolve();
     };
+    utterance.onerror = function(e) {
+      reject(e);
+    };
   });
 }
 
