@@ -38,7 +38,7 @@ function removeUtterance(index) {
 window.utterances.delete(index);
 }
 
-function speakIt(text, voiceName, speechSynthesis, volume) {
+function speakIt(text, voiceName, speechSynthesis, volume, historyStorage) {
   return new Promise(function (resolve, reject) {
     if (text === '') {
       reject(new Error('no text'));
@@ -50,6 +50,7 @@ function speakIt(text, voiceName, speechSynthesis, volume) {
       return voice.name === voiceName;
     });
     utterance.volume = volume;
+    historyStorage.add(text);
     speechSynthesis.speak(utterance);
 
     utterance.onend = function() {
@@ -72,6 +73,69 @@ function disable(tag) {
   tag.disabled = true;
   tag.classList.add('disabled');
 };
+
+function HistoryStorage(storage) {
+  this.KEY = 'SPEAK-IT-STORAGE';
+  this.storage = storage.find(function (storage) {
+    return storage != null;
+  });
+}
+HistoryStorage.prototype.get = function () {
+  if (this.storage == null) {
+    return [];
+  }
+  var history = this.storage.getItem(this.KEY);
+  if (history == null) {
+    return [];
+  }
+  return JSON.parse(history);
+};
+HistoryStorage.prototype.add = function (message) {
+  if (this.storage == null) {
+    return;
+  }
+  var history = this.get();
+  history.unshift(message);
+  this.storage.setItem(this.KEY, JSON.stringify(history));
+};
+
+function setHistoryList(target, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window) {
+  var child = target.firstChild;
+  for (; child != null; child = target.firstChild) {
+    target.removeChild(child);
+  }
+
+  var history = historyStorage.get();
+  history.map(function (message) {
+    var item = getHistoryItem(message, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+    target.appendChild(item);
+  });
+}
+
+function getHistoryItem(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window) {
+  var button = window.document.createElement('button');
+  button.className = 'list-group-item';
+  button.textContent = text;
+  button.onclick = function (e) {
+    e.preventDefault();
+    speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+  };
+  return button;
+}
+
+function speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window) {
+  var voice = voiceOptions.value;
+  var volume = getVolume(volumeInput);
+
+  doms.map(disable);
+  var speak = speakIt(text, voice, window.speechSynthesis, volume, historyStorage);
+  speak.catch(function(e) {
+    console.log(e);
+  }).then(function () {
+    doms.map(enable);
+    setHistoryList(historyDOM, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+  });
+}
 
 document.body.onload = function() {
   if (!isSpeechSupport(window)) {
@@ -98,21 +162,16 @@ document.body.onload = function() {
   var speakItSubmit = document.getElementById('speak-it-submit');
   var volumeInput = document.getElementById('volume');
 
-  window.utterances = new Map();
+  var historyStorage = new HistoryStorage([ window.localStorage, window.sessionStorage ]);
+  var historyDOM = document.getElementById('history-list');
   var doms = [ voiceOptions, speakItInput, speakItSubmit, volume ];
+  setHistoryList(historyDOM, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+
+  window.utterances = new Map();
   speakItForm.onsubmit = function(e) {
     e.preventDefault();
 
     var text = speakItInput.value;
-    var voice = voiceOptions.value;
-    var volume = getVolume(volumeInput);
-
-    doms.map(disable);
-    var speak = speakIt(text, voice, window.speechSynthesis, volume);
-    speak.catch(function(e) {
-      console.log(e);
-    }).then(function () {
-      doms.map(enable);
-    });
+    speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
   };
 };
