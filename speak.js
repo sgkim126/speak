@@ -28,6 +28,16 @@ function getVolume(volumeDOM) {
   return volume / 100;
 }
 
+var utteranceIndex = 0;
+function saveUtterance(utterance) {
+  utteranceIndex += 1;
+  window.utterances.set(utteranceIndex, utterance);
+  return utteranceIndex;
+}
+function removeUtterance(index) {
+window.utterances.delete(index);
+}
+
 function speakIt(text, voiceName, speechSynthesis, volume) {
   return new Promise(function (resolve, reject) {
     if (text === '') {
@@ -35,6 +45,7 @@ function speakIt(text, voiceName, speechSynthesis, volume) {
     }
 
     var utterance = new SpeechSynthesisUtterance(text)
+    var utteranceIndex = saveUtterance(utterance);
     utterance.voice = speechSynthesis.getVoices().find(function (voice) {
       return voice.name === voiceName;
     });
@@ -43,9 +54,11 @@ function speakIt(text, voiceName, speechSynthesis, volume) {
 
     utterance.onend = function() {
       resolve();
+      removeUtterance(utteranceIndex);
     };
     utterance.onerror = function(e) {
       reject(e);
+      removeUtterance(utteranceIndex);
     };
   });
 }
@@ -85,6 +98,7 @@ document.body.onload = function() {
   var speakItSubmit = document.getElementById('speak-it-submit');
   var volumeInput = document.getElementById('volume');
 
+  window.utterances = new Map();
   var doms = [ voiceOptions, speakItInput, speakItSubmit, volume ];
   speakItForm.onsubmit = function(e) {
     e.preventDefault();
