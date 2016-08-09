@@ -82,6 +82,7 @@ document.body.onload = function() {
     doms.map(disable);
     var speak = speakIt(text, voice, window.speechSynthesis);
     speak.catch(function(e) {
+      console.log(e);
     }).then(function () {
       doms.map(enable);
     });
