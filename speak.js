@@ -71,21 +71,19 @@ document.body.onload = function() {
   var speakItForm = document.getElementById('speak-it-form');
   var speakItInput = document.getElementById('speak-it-input');
   var speakItSubmit = document.getElementById('speak-it-submit');
+
+  var doms = [ voiceOptions, speakItInput, speakItSubmit ];
   speakItForm.onsubmit = function(e) {
     e.preventDefault();
 
     var text = speakItInput.value;
     var voice = voiceOptions.value;
 
-    disable(voiceOptions);
-    disable(speakItInput);
-    disable(speakItSubmit);
+    doms.map(disable);
     var speak = speakIt(text, voice, window.speechSynthesis);
-    speak.catch(function() {
+    speak.catch(function(e) {
     }).then(function () {
-      enable(voiceOptions);
-      enable(speakItInput);
-      enable(speakItSubmit);
+      doms.map(enable);
     });
   };
 };
