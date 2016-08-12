@@ -1,0 +1,41 @@
+{
+  "name": "speak",
+  "version": "1.0.0",
+  "description": "Speak sentences.",
+  "main": "speak.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sgkim126/speak.git"
+  },
+  "keywords": [
+    "speak",
+    "speech",
+    "tts",
+    "text-to-speach"
+  ],
+  "author": "Seulgi Kim <dev@seulgi.kim>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sgkim126/speak/issues"
+  },
+  "homepage": "https://github.com/sgkim126/speak#readme",
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.13.2",
+    "babel-preset-react": "^6.11.1",
+    "ts-loader": "^0.8.2",
+    "tslint": "^3.14.0",
+    "typescript": "^1.8.10",
+    "typings": "^1.3.2",
+    "webpack": "^1.13.1"
+  },
+  "dependencies": {
+    "react": "^15.3.0",
+    "react-bootstrap": "^0.30.2",
+    "react-dom": "^15.3.0"
+  }
+}
