@@ -49,9 +49,11 @@ function speakIt(text, voiceName, speechSynthesis, volume, historyStorage) {
 
     var utterance = new SpeechSynthesisUtterance(text)
     var utteranceIndex = saveUtterance(utterance);
-    utterance.voice = speechSynthesis.getVoices().find(function (voice) {
+    var voice = speechSynthesis.getVoices().find(function (voice) {
       return voice.name === voiceName;
     });
+    utterance.voice = voice;
+    utterance.lang = voice.lang;
     utterance.volume = volume;
     historyStorage.add(text);
     speechSynthesis.speak(utterance);
