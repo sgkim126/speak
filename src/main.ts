@@ -1,4 +1,5 @@
 import HistoryStorage from './history-storage.ts';
+import Utterances from './utterances.ts';
 
 function isSpeechSupport(window: Window): boolean {
   return window['speechSynthesis'] != null && window['SpeechSynthesisUtterance'] != null;
@@ -31,38 +32,24 @@ function getVolume(volumeDOM: HTMLInputElement): number {
   return volume / 100;
 }
 
-var utteranceIndex: number = 0;
-function saveUtterance(utterance: SpeechSynthesisUtterance): number {
-  utteranceIndex += 1;
-  window['utterances'].set(utteranceIndex, utterance);
-  return utteranceIndex;
-}
-function removeUtterance(index: number): void {
-  window['utterances'].delete(index);
-}
-
-function speakIt(text: string, voiceName: string, speechSynthesis: SpeechSynthesis, volume: number, historyStorage: HistoryStorage): Promise<{}> {
+function speakIt(text: string, voiceName: string, speechSynthesis: SpeechSynthesis, volume: number, historyStorage: HistoryStorage, utterances: Utterances): Promise<{}> {
   return new Promise((resolve, reject) => {
     if (text === '') {
       reject(new Error('no text'));
     }
 
-    const utterance = new SpeechSynthesisUtterance(text)
-    const utteranceIndex = saveUtterance(utterance);
     const voice: SpeechSynthesisVoice = speechSynthesis.getVoices().find(voice => voice.name === voiceName);
-    utterance.voice = voice;
-    utterance.lang = voice.lang as string;
-    utterance.volume = volume;
+    const [ utterance, utteranceIndex ] = utterances.create(text, voice, volume);
     historyStorage.add(text);
     speechSynthesis.speak(utterance);
 
     utterance.onend = () => {
       resolve();
-      removeUtterance(utteranceIndex);
+      utterances.delete(utteranceIndex);
     };
     utterance.onerror = (e) => {
       reject(e);
-      removeUtterance(utteranceIndex);
+      utterances.delete(utteranceIndex);
     };
   });
 }
@@ -77,7 +64,7 @@ function disable(tag: { disabled: boolean, classList: DOMTokenList }): void {
   tag.classList.add('disabled');
 };
 
-function setHistoryList(target: HTMLDivElement, voiceOptions: HTMLSelectElement, volumeInput: HTMLInputElement, historyDOM: HTMLDivElement, historyStorage: HistoryStorage, doms: HTMLElement[], window: Window): void {
+function setHistoryList(target: HTMLDivElement, voiceOptions: HTMLSelectElement, volumeInput: HTMLInputElement, historyDOM: HTMLDivElement, historyStorage: HistoryStorage, doms: HTMLElement[], window: Window, utterances: Utterances): void {
   var child = target.firstChild;
   for (; child != null; child = target.firstChild) {
     target.removeChild(child);
@@ -85,33 +72,33 @@ function setHistoryList(target: HTMLDivElement, voiceOptions: HTMLSelectElement,
 
   const history = historyStorage.get();
   history.map(message => {
-    const item = getHistoryItem(message, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+    const item = getHistoryItem(message, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window, utterances);
     target.appendChild(item);
   });
 }
 
-function getHistoryItem(text: string, voiceOptions: HTMLSelectElement, volumeInput: HTMLInputElement, historyDOM: HTMLDivElement, historyStorage: HistoryStorage, doms: HTMLElement[], window: Window): HTMLButtonElement {
+function getHistoryItem(text: string, voiceOptions: HTMLSelectElement, volumeInput: HTMLInputElement, historyDOM: HTMLDivElement, historyStorage: HistoryStorage, doms: HTMLElement[], window: Window, utterances: Utterances): HTMLButtonElement {
   const button = window.document.createElement('button');
   button.className = 'list-group-item';
   button.textContent = text;
   button.onclick = (e) => {
     e.preventDefault();
-    speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+    speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window, utterances);
   };
   return button;
 }
 
-function speak(text: string, voiceOptions: HTMLSelectElement, volumeInput: HTMLInputElement, historyDOM: HTMLDivElement, historyStorage: HistoryStorage, doms: any[], window: Window): void {
+function speak(text: string, voiceOptions: HTMLSelectElement, volumeInput: HTMLInputElement, historyDOM: HTMLDivElement, historyStorage: HistoryStorage, doms: any[], window: Window, utterances: Utterances): void {
   const voice = voiceOptions.value;
   const volume = getVolume(volumeInput);
 
   doms.map(disable);
-  const speak = speakIt(text, voice, window.speechSynthesis, volume, historyStorage);
+  const speak = speakIt(text, voice, window.speechSynthesis, volume, historyStorage, utterances);
   speak.catch(e => {
     console.log(e);
   }).then(() => {
     doms.map(enable);
-    setHistoryList(historyDOM, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+    setHistoryList(historyDOM, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window, utterances);
   });
 }
 
@@ -141,13 +128,14 @@ document.body.onload = () => {
   const historyStorage = new HistoryStorage([ window.localStorage, window.sessionStorage ]);
   const historyDOM = document.getElementById('history-list') as HTMLDivElement;
   const doms = [ voiceOptions, speakItInput, speakItSubmit, volumeInput ] as HTMLElement[];
-  setHistoryList(historyDOM, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+  const utterances = new Utterances();
 
-  window['utterances'] = new Map();
+  setHistoryList(historyDOM, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window, utterances);
+
   speakItForm.onsubmit = (e) => {
     e.preventDefault();
 
     const text = speakItInput.value;
-    speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+    speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window, utterances);
   };
 };
