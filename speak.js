@@ -16,6 +16,9 @@ function makeVoiceOption(voice, document) {
   var option = document.createElement('option');
   option.dataset['lang'] = voice.lang;
   option.dataset['name'] = voice.name;
+  if (voice.default) {
+    option.selected = true;
+  }
   option.textContent = voice.name;
   return option;
 }
