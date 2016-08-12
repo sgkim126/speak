@@ -5,17 +5,15 @@ function isSpeechSupport(window: Window): boolean {
 }
 
 function getVoices(speechSynthesis: SpeechSynthesis): Promise<SpeechSynthesisVoice[]> {
-  return (new Promise(function (resolve) {
+  return (new Promise(resolve => {
     speechSynthesis.onvoiceschanged = resolve;
-  })).then(function () {
-    return speechSynthesis.getVoices().map(function (voice) {
-      return { lang: voice.lang, name: voice.name };
-    });
-  });
+  })).then(() => speechSynthesis.getVoices().map((voice) => {
+    return { lang: voice.lang, name: voice.name }
+  }));
 }
 
 function makeVoiceOption(voice: SpeechSynthesisVoice, document: Document): HTMLOptionElement {
-  var option = document.createElement('option');
+  const option = document.createElement('option');
   option.dataset['lang'] = voice.lang;
   option.dataset['name'] = voice.name;
   if (voice.default) {
@@ -26,7 +24,7 @@ function makeVoiceOption(voice: SpeechSynthesisVoice, document: Document): HTMLO
 }
 
 function getVolume(volumeDOM: HTMLInputElement): number {
-  var volume = parseInt(volumeDOM.value, 10);
+  const volume = parseInt(volumeDOM.value, 10);
   if (volume == null) {
     return 1;
   }
@@ -44,27 +42,25 @@ function removeUtterance(index: number): void {
 }
 
 function speakIt(text: string, voiceName: string, speechSynthesis: SpeechSynthesis, volume: number, historyStorage: HistoryStorage): Promise<{}> {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (text === '') {
       reject(new Error('no text'));
     }
 
-    var utterance = new SpeechSynthesisUtterance(text)
-    var utteranceIndex = saveUtterance(utterance);
-    var voice: SpeechSynthesisVoice = speechSynthesis.getVoices().find(function (voice) {
-      return voice.name === voiceName;
-    });
+    const utterance = new SpeechSynthesisUtterance(text)
+    const utteranceIndex = saveUtterance(utterance);
+    const voice: SpeechSynthesisVoice = speechSynthesis.getVoices().find(voice => voice.name === voiceName);
     utterance.voice = voice;
     utterance.lang = voice.lang as string;
     utterance.volume = volume;
     historyStorage.add(text);
     speechSynthesis.speak(utterance);
 
-    utterance.onend = function() {
+    utterance.onend = () => {
       resolve();
       removeUtterance(utteranceIndex);
     };
-    utterance.onerror = function(e) {
+    utterance.onerror = (e) => {
       reject(e);
       removeUtterance(utteranceIndex);
     };
@@ -87,18 +83,18 @@ function setHistoryList(target: HTMLDivElement, voiceOptions: HTMLSelectElement,
     target.removeChild(child);
   }
 
-  var history = historyStorage.get();
-  history.map(function (message: string) {
-    var item = getHistoryItem(message, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
+  const history = historyStorage.get();
+  history.map(message => {
+    const item = getHistoryItem(message, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
     target.appendChild(item);
   });
 }
 
 function getHistoryItem(text: string, voiceOptions: HTMLSelectElement, volumeInput: HTMLInputElement, historyDOM: HTMLDivElement, historyStorage: HistoryStorage, doms: HTMLElement[], window: Window): HTMLButtonElement {
-  var button = window.document.createElement('button');
+  const button = window.document.createElement('button');
   button.className = 'list-group-item';
   button.textContent = text;
-  button.onclick = function (e) {
+  button.onclick = (e) => {
     e.preventDefault();
     speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
   };
@@ -106,54 +102,52 @@ function getHistoryItem(text: string, voiceOptions: HTMLSelectElement, volumeInp
 }
 
 function speak(text: string, voiceOptions: HTMLSelectElement, volumeInput: HTMLInputElement, historyDOM: HTMLDivElement, historyStorage: HistoryStorage, doms: any[], window: Window): void {
-  var voice = voiceOptions.value;
-  var volume = getVolume(volumeInput);
+  const voice = voiceOptions.value;
+  const volume = getVolume(volumeInput);
 
   doms.map(disable);
-  var speak = speakIt(text, voice, window.speechSynthesis, volume, historyStorage);
-  speak.catch(function(e) {
+  const speak = speakIt(text, voice, window.speechSynthesis, volume, historyStorage);
+  speak.catch(e => {
     console.log(e);
-  }).then(function () {
+  }).then(() => {
     doms.map(enable);
     setHistoryList(historyDOM, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
   });
 }
 
-document.body.onload = function(): void {
+document.body.onload = () => {
   if (!isSpeechSupport(window)) {
     return;
   }
 
-  var notSupported = document.getElementById('not_supported') as HTMLDivElement;
+  const notSupported = document.getElementById('not_supported') as HTMLDivElement;
   notSupported.classList.add('hide');
-  var supported = document.getElementById('supported') as HTMLDivElement;
+  const supported = document.getElementById('supported') as HTMLDivElement;
   supported.classList.remove('hide');
 
-  var voiceOptions = document.getElementById('voice_options') as HTMLSelectElement;
+  const voiceOptions = document.getElementById('voice_options') as HTMLSelectElement;
 
-  var voices = getVoices(window.speechSynthesis);
-  voices.then(function(voices: SpeechSynthesisVoice[]) {
-    voices.map(function (voice: SpeechSynthesisVoice) { return makeVoiceOption(voice, document); })
-    .forEach(function (option: HTMLOptionElement) {
-      voiceOptions.appendChild(option);
-    });
-  });
+  const voices = getVoices(window.speechSynthesis);
+  voices.then(voices =>
+    voices.map(voice => makeVoiceOption(voice, document))
+    .forEach(option => voiceOptions.appendChild(option))
+  );
 
-  var speakItForm = document.getElementById('speak-it-form') as HTMLFormElement;
-  var speakItInput = document.getElementById('speak-it-input') as HTMLInputElement;
-  var speakItSubmit = document.getElementById('speak-it-submit') as HTMLButtonElement;
-  var volumeInput = document.getElementById('volume') as HTMLInputElement;
+  const speakItForm = document.getElementById('speak-it-form') as HTMLFormElement;
+  const speakItInput = document.getElementById('speak-it-input') as HTMLInputElement;
+  const speakItSubmit = document.getElementById('speak-it-submit') as HTMLButtonElement;
+  const volumeInput = document.getElementById('volume') as HTMLInputElement;
 
-  var historyStorage = new HistoryStorage([ window.localStorage, window.sessionStorage ]);
-  var historyDOM = document.getElementById('history-list') as HTMLDivElement;
-  var doms = [ voiceOptions, speakItInput, speakItSubmit, volumeInput ] as HTMLElement[];
+  const historyStorage = new HistoryStorage([ window.localStorage, window.sessionStorage ]);
+  const historyDOM = document.getElementById('history-list') as HTMLDivElement;
+  const doms = [ voiceOptions, speakItInput, speakItSubmit, volumeInput ] as HTMLElement[];
   setHistoryList(historyDOM, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
 
   window['utterances'] = new Map();
-  speakItForm.onsubmit = function(e) {
+  speakItForm.onsubmit = (e) => {
     e.preventDefault();
 
-    var text = speakItInput.value;
+    const text = speakItInput.value;
     speak(text, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window);
   };
 };

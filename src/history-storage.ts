@@ -4,16 +4,14 @@ export default class HistoryStorage {
   private storage: Storage;
 
   constructor(storage: Storage[]) {
-    this.storage = storage.find(function (storage) {
-      return storage != null;
-    });
+    this.storage = storage.find(storage => storage != null);
   }
 
   get(): string[] {
     if (this.storage == null) {
       return [];
     }
-    var history = this.storage.getItem(KEY);
+    const history = this.storage.getItem(KEY);
     if (history == null) {
       return [];
     }
