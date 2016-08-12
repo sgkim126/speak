@@ -20,7 +20,7 @@ export default class HistoryStorage {
     return JSON.parse(history);
   }
 
-  add(message: string) {
+  add(message: string): void {
     if (this.storage == null) {
       return;
     }

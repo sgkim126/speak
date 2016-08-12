@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "noEmitOnError": true,
+    "noImplicitAny": true,
     "jsx": "preserve",
     "suppressImplicitAnyIndexErrors": true,
     "target": "ES6"
