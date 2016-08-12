@@ -1,3 +1,5 @@
+import HistoryStorage from './history-storage.ts';
+
 function isSpeechSupport(window) {
   return window.speechSynthesis != null && window.SpeechSynthesisUtterance != null;
 }
@@ -77,31 +79,6 @@ function enable(tag) {
 function disable(tag) {
   tag.disabled = true;
   tag.classList.add('disabled');
-};
-
-function HistoryStorage(storage) {
-  this.KEY = 'SPEAK-IT-STORAGE';
-  this.storage = storage.find(function (storage) {
-    return storage != null;
-  });
-}
-HistoryStorage.prototype.get = function () {
-  if (this.storage == null) {
-    return [];
-  }
-  var history = this.storage.getItem(this.KEY);
-  if (history == null) {
-    return [];
-  }
-  return JSON.parse(history);
-};
-HistoryStorage.prototype.add = function (message) {
-  if (this.storage == null) {
-    return;
-  }
-  var history = this.get();
-  history.unshift(message);
-  this.storage.setItem(this.KEY, JSON.stringify(history));
 };
 
 function setHistoryList(target, voiceOptions, volumeInput, historyDOM, historyStorage, doms, window) {
