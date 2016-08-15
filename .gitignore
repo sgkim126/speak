@@ -1,0 +1,8 @@
+/Makefile
+/node_modules/
+/src/
+/typings/
+/webpack.config.js
+/package.json
+/tsconfig.json
+/typings.json
