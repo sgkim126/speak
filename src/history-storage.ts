@@ -22,7 +22,8 @@ export default class HistoryStorage {
     if (this.storage == null) {
       return;
     }
-    const history = this.get();
+    let history = this.get();
+    history = history.filter(h => h !== message);
     history.unshift(message);
     this.storage.setItem(KEY, JSON.stringify(history));
   }
