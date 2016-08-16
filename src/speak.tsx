@@ -10,6 +10,8 @@ interface IProps {
 interface IState {
 }
 
+const SEPAK_INPUT = 'speakInputRef';
+
 export default class Speak extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
@@ -21,11 +23,15 @@ export default class Speak extends React.Component<IProps, IState> {
     const {disabled } = this.props;
 
     return <form className='input-group' onSubmit={onSubmit}>
-      <input type='text' className='form-control' placeholder='Speak it' autoComplete='off' name='speakInput' disabled={disabled} />
+      <input type='text' className='form-control' placeholder='Speak it' autoComplete='off' name='speakInput' ref={SEPAK_INPUT} disabled={disabled} />
       <span className="input-group-btn">
         <button className='btn' type='submit' title='Speak' disabled={disabled}>Speak</button>
       </span>
     </form>;
+  }
+
+  public change(text: string): void {
+    (this.refs[SEPAK_INPUT] as any).value = text;
   }
 
   private onSubmit(e: React.FormEvent): void {

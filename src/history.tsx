@@ -6,7 +6,7 @@ interface IProps {
 
   disabled: boolean;
 
-  speak: (text: string) => void;
+  onClick: (text: string) => void;
 }
 
 interface IState {
@@ -42,7 +42,7 @@ export default class Main extends React.Component<IProps, IState> {
   private onClick(e: React.MouseEvent): void {
     e.preventDefault();
 
-    const { speak } = this.props;
-    speak((e.target as HTMLButtonElement).dataset['value']);
+    const { onClick } = this.props;
+    onClick((e.target as HTMLButtonElement).dataset['value']);
   }
 }

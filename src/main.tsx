@@ -25,6 +25,8 @@ interface IState {
 
 const DEFAULT_VOLUME = 100;
 
+const SPEAK = 'speakRef';
+
 export default class Main extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
@@ -41,6 +43,8 @@ export default class Main extends React.Component<IProps, IState> {
 
   public render(): JSX.Element {
     const speak = this.speak.bind(this);
+
+    const onHistoryClick = this.onHistoryClick.bind(this);
     const onVolumeChange = this.onVolumeChange.bind(this);
     const onVoiceChange = this.onVoiceChange.bind(this);
 
@@ -50,12 +54,12 @@ export default class Main extends React.Component<IProps, IState> {
     return <Grid style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
     <Row>
       <Col xs={12}>
-        <Speak speak={speak} disabled={disabled} />
+        <Speak speak={speak} disabled={disabled} ref={SPEAK}/>
       </Col>
     </Row>
     <Row>
       <Col xs={12}>
-        <History history={history} speak={speak} disabled={disabled} />
+        <History history={history} disabled={disabled} onClick={onHistoryClick} />
       </Col>
     </Row>
     <Row style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
@@ -67,6 +71,10 @@ export default class Main extends React.Component<IProps, IState> {
       </Col>
     </Row>
   </Grid>
+  }
+
+  private onHistoryClick(text: string): void {
+    (this.refs[SPEAK] as any).change(text);
   }
 
   private speak(text: string): void {
