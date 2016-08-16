@@ -31,7 +31,7 @@ export default class Main extends React.Component<IProps, IState> {
 
     const onClick = this.onClick.bind(this);
 
-    return <div className='list-group' id='history-list'>
+    return <div className='list-group' id='history-list' style={{height: '80%', overflowX: 'hidden', overflowY: 'scroll'}}>
       {history.map((history, i) => {
         const key = history + '-' + i.toString();
         return <button key={key} title={history} className={className} disabled={disabled} data-value={history} onClick={onClick}>{history}</button>;
