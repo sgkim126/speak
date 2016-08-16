@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 interface IProps {
   history: string[];
@@ -34,7 +33,8 @@ export default class Main extends React.Component<IProps, IState> {
     return <div className='list-group' id='history-list' style={{height: '80%', overflowX: 'hidden', overflowY: 'scroll'}}>
       {history.map((history, i) => {
         const key = history + '-' + i.toString();
-        return <button key={key} title={history} className={className} disabled={disabled} data-value={history} onClick={onClick}>{history}</button>;
+        return <button key={key} title={history} className={className} disabled={disabled}
+          data-value={history} onClick={onClick}>{history}</button>;
       })}
     </div>;
   }
@@ -43,6 +43,7 @@ export default class Main extends React.Component<IProps, IState> {
     e.preventDefault();
 
     const { onClick } = this.props;
-    onClick((e.target as HTMLButtonElement).dataset['value']);
+    const VALUE = 'value';
+    onClick((e.target as HTMLButtonElement).dataset[VALUE]);
   }
 }

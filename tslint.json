@@ -7,6 +7,9 @@
       "public-before-private",
       "static-before-instance",
       "variables-before-functions"
-    ]
+    ],
+    "no-console": false,
+    "no-shadowed-variable": false,
+    "quotemark": false
   }
 }

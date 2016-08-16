@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 interface IProps {
   defaultVolume: number;
@@ -19,7 +18,10 @@ export default class VolumeOption extends React.Component<IProps, IState> {
 
   public render(): JSX.Element {
     const { defaultVolume, disabled } = this.props;
-    return <input type='range' min='0' max='100' step='1' defaultValue={defaultVolume} onChange={this.onChange.bind(this)} disabled={disabled} />;
+    return <input type='range' min='0' max='100' step='1'
+      defaultValue={defaultVolume}
+      onChange={this.onChange.bind(this)}
+      disabled={disabled} />;
   }
 
   private onChange(e: React.FormEvent): void {

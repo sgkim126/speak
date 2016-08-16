@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 interface IProps {
   voices: SpeechSynthesisVoice[];
@@ -27,7 +26,7 @@ export default class VoiceOption extends React.Component<IProps, IState> {
 
   private onChange(e: React.FormEvent): void {
     const { voices, onChange } = this.props;
-    const name = (e.target as any).value
+    const name = (e.target as any).value;
     const voice = voices.find(voice => voice.name === name);
     onChange(voice);
   }

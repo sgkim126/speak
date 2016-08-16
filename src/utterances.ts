@@ -1,4 +1,4 @@
-var index: number = 0;
+let index: number = 0;
 
 export default class Utterances {
   private utterances: Map<number, SpeechSynthesisUtterance>;
@@ -7,7 +7,7 @@ export default class Utterances {
     this.utterances = new Map<number, SpeechSynthesisUtterance>();
   }
 
-  create(text: string, voice: SpeechSynthesisVoice, volume: number): [ SpeechSynthesisUtterance, number ] {
+  public create(text: string, voice: SpeechSynthesisVoice, volume: number): [ SpeechSynthesisUtterance, number ] {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = voice;
     utterance.lang = voice.lang;
@@ -19,7 +19,7 @@ export default class Utterances {
     return [ utterance, index ];
   }
 
-  delete(index: number): void {
+  public delete(index: number): void {
     this.utterances.delete(index);
   }
 }

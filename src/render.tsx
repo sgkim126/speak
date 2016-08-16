@@ -1,12 +1,14 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import HistoryStorage from './history-storage.ts';
 import Main from './main.tsx';
 import Unsupported from './unsupported.tsx';
 import Utterances from './utterances.ts';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 function isSpeechSupport(window: Window): boolean {
-  return window['speechSynthesis'] != null && window['SpeechSynthesisUtterance'] != null;
+  const SPEECH_SYNTHESIS = 'speechSynthesis';
+  const SPEECH_SYNTHESIS_UTTERANCE = 'SpeechSynthesisUtterance';
+  return window.speechSynthesis != null && window[SPEECH_SYNTHESIS_UTTERANCE] != null;
 }
 
 function getVoices(speechSynthesis: SpeechSynthesis): Promise<SpeechSynthesisVoice[]> {
@@ -25,5 +27,6 @@ document.body.onload = () => {
 
   const utterances = new Utterances();
   const historyStorage = new HistoryStorage([ window.localStorage, window.sessionStorage ]);
-  getVoices(window.speechSynthesis).then(voices => ReactDOM.render(<Main voices={voices} historyStorage={historyStorage} utterances={utterances} />, target));
+  getVoices(window.speechSynthesis)
+  .then(voices => ReactDOM.render(<Main voices={voices} historyStorage={historyStorage} utterances={utterances} />, target));
 };

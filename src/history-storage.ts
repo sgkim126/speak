@@ -7,7 +7,7 @@ export default class HistoryStorage {
     this.storage = storage.find(storage => storage != null);
   }
 
-  get(): string[] {
+  public get(): string[] {
     if (this.storage == null) {
       return [];
     }
@@ -18,7 +18,7 @@ export default class HistoryStorage {
     return JSON.parse(history);
   }
 
-  add(message: string): void {
+  public add(message: string): void {
     if (this.storage == null) {
       return;
     }

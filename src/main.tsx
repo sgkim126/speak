@@ -1,11 +1,10 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import History from './history.tsx';
 import HistoryStorage from './history-storage.ts';
+import History from './history.tsx';
 import Speak from './speak.tsx';
 import Utterances from './utterances.ts';
 import VoiceOption from './voice-option.tsx';
 import VolumeOption from './volume-option.tsx';
+import * as React from 'react';
 import { Col, Grid, Row } from 'react-bootstrap';
 
 interface IProps {
@@ -48,10 +47,10 @@ export default class Main extends React.Component<IProps, IState> {
     const onVolumeChange = this.onVolumeChange.bind(this);
     const onVoiceChange = this.onVoiceChange.bind(this);
 
-    const { utterances, voices } = this.props;
+    const { voices } = this.props;
     const { disabled, voice, volume, history } = this.state;
 
-    return <Grid style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
+    return <Grid style={{ bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }}>
     <Row>
       <Col xs={12}>
         <Speak speak={speak} disabled={disabled} ref={SPEAK}/>
@@ -62,7 +61,7 @@ export default class Main extends React.Component<IProps, IState> {
         <History history={history} disabled={disabled} onClick={onHistoryClick} />
       </Col>
     </Row>
-    <Row style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
+    <Row style={{ bottom: 0, left: 0, position: 'absolute', right: 0 }}>
       <Col xs={6} className='btn-group form-group'>
         <VoiceOption voices={voices} selected={voice} onChange={onVoiceChange} disabled={disabled} />
       </Col>
@@ -70,7 +69,7 @@ export default class Main extends React.Component<IProps, IState> {
         <VolumeOption defaultVolume={volume} onChange={onVolumeChange} disabled={disabled} />
       </Col>
     </Row>
-  </Grid>
+  </Grid>;
   }
 
   private onHistoryClick(text: string): void {
