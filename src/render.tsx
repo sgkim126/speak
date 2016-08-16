@@ -6,7 +6,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 function isSpeechSupport(window: Window): boolean {
-  const SPEECH_SYNTHESIS = 'speechSynthesis';
   const SPEECH_SYNTHESIS_UTTERANCE = 'SpeechSynthesisUtterance';
   return window.speechSynthesis != null && window[SPEECH_SYNTHESIS_UTTERANCE] != null;
 }
