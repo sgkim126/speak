@@ -58,7 +58,7 @@ export default class Main extends React.Component<IProps, IState> {
     </Row>
     <Row>
       <Col xs={12}>
-        <History history={history} disabled={disabled} onClick={onHistoryClick} />
+        <History history={history} disabled={disabled} onClick={onHistoryClick} speak={speak} />
       </Col>
     </Row>
     <Row style={{ bottom: 0, left: 0, position: 'absolute', right: 0 }}>
