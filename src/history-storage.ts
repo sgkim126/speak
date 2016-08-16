@@ -22,9 +22,21 @@ export default class HistoryStorage {
     if (this.storage == null) {
       return;
     }
-    let history = this.get();
-    history = history.filter(h => h !== message);
+    const history = this.removedHistory(message);
     history.unshift(message);
     this.storage.setItem(KEY, JSON.stringify(history));
+  }
+
+  public delete(message: string): void {
+    if (this.storage == null) {
+      return;
+    }
+    const history = this.removedHistory(message);
+    this.storage.setItem(KEY, JSON.stringify(history));
+  }
+
+  private removedHistory(message: string): string[] {
+    let history = this.get();
+    return history.filter(h => h !== message);
   }
 }
