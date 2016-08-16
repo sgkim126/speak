@@ -42,6 +42,7 @@ export default class Main extends React.Component<IProps, IState> {
 
   public render(): JSX.Element {
     const speak = this.speak.bind(this);
+    const remove = this.remove.bind(this);
 
     const onHistoryClick = this.onHistoryClick.bind(this);
     const onVolumeChange = this.onVolumeChange.bind(this);
@@ -58,7 +59,7 @@ export default class Main extends React.Component<IProps, IState> {
     </Row>
     <Row>
       <Col xs={12}>
-        <History history={history} disabled={disabled} onClick={onHistoryClick} speak={speak} />
+        <History history={history} disabled={disabled} onClick={onHistoryClick} speak={speak} remove={remove} />
       </Col>
     </Row>
     <Row style={{ bottom: 0, left: 0, position: 'absolute', right: 0 }}>
@@ -90,6 +91,13 @@ export default class Main extends React.Component<IProps, IState> {
     }).catch(e => console.log(e)).then(() => {
       this.setState({ disabled: false });
     });
+  }
+
+  private remove(text: string): void {
+    const { historyStorage } = this.props;
+    historyStorage.delete(text);
+    const history = historyStorage.get();
+    this.setState({ history });
   }
 
   private onVolumeChange(volume: number): void {

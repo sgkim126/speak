@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonToolbar, Glyphicon } from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, Glyphicon } from 'react-bootstrap';
 
 interface IProps {
   history: string[];
@@ -8,6 +8,7 @@ interface IProps {
 
   onClick: (text: string) => void;
   speak: (text: string) => void;
+  remove: (text: string) => void;
 }
 
 interface IState {
@@ -32,6 +33,7 @@ export default class Main extends React.Component<IProps, IState> {
 
     const onClick = this.onClick.bind(this);
     const speak = this.speak.bind(this);
+    const remove = this.remove.bind(this);
 
     return <ul className='list-group' style={{height: '80%', overflowX: 'hidden', overflowY: 'scroll'}}>
       {history.map((history, i) => {
@@ -40,8 +42,12 @@ export default class Main extends React.Component<IProps, IState> {
           <ButtonToolbar>
             <Button title={history} className={className} disabled={disabled}
               data-value={history} onClick={onClick}>{history}</Button>
-            <Button className={className} disabled={disabled}
-              data-value={history} onClick={speak}><Glyphicon glyph='play' /></Button>
+            <ButtonGroup>
+              <Button className={className} disabled={disabled}
+                data-value={history} onClick={speak}><Glyphicon glyph='play' /></Button>
+              <Button className={className} disabled={disabled}
+                data-value={history} onClick={remove}><Glyphicon glyph='remove' /></Button>
+            </ButtonGroup>
           </ButtonToolbar>
         </li>;
       })}
@@ -62,5 +68,13 @@ export default class Main extends React.Component<IProps, IState> {
     const { speak } = this.props;
     const VALUE = 'value';
     speak((e.currentTarget as HTMLButtonElement).dataset[VALUE]);
+  }
+
+  private remove(e: React.MouseEvent): void {
+    e.preventDefault();
+
+    const { remove } = this.props;
+    const VALUE = 'value';
+    remove((e.currentTarget as HTMLButtonElement).dataset[VALUE]);
   }
 }
