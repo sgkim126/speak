@@ -101,12 +101,11 @@ export default class Main extends React.Component<IProps, IState> {
 }
 
 function speak(text: string, voice: SpeechSynthesisVoice, volume: number, utterances: Utterances): Promise<{}> {
+  if (text == null || text === '') {
+    return Promise.reject<{}>(new Error('no text'));
+  }
   const [ utterance, utteranceIndex ] = utterances.create(text, voice, volume);
   const result = new Promise((resolve, reject) => {
-    if (text === '') {
-      reject(new Error('no text'));
-      return;
-    }
     utterance.onend = resolve;
     utterance.onerror = reject;
     speechSynthesis.speak(utterance);
