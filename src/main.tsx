@@ -17,14 +17,13 @@ interface IState {
   history?: string[];
 
   voice?: SpeechSynthesisVoice;
-  volume?: number;
 
   disabled?: boolean;
 }
 
-const DEFAULT_VOLUME = 100;
-
 const SPEAK = 'speakRef';
+
+const VOLUME = 'volumeRefOption';
 
 export default class Main extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -34,10 +33,9 @@ export default class Main extends React.Component<IProps, IState> {
 
     const history = historyStorage.get();
     const voice = voices.find(voice => voice.default);
-    const volume = DEFAULT_VOLUME;
     const disabled = false;
 
-    this.state = { history, voice, volume, disabled };
+    this.state = { history, voice, disabled };
   }
 
   public render(): JSX.Element {
@@ -45,11 +43,10 @@ export default class Main extends React.Component<IProps, IState> {
     const remove = this.remove.bind(this);
 
     const onHistoryClick = this.onHistoryClick.bind(this);
-    const onVolumeChange = this.onVolumeChange.bind(this);
     const onVoiceChange = this.onVoiceChange.bind(this);
 
     const { voices } = this.props;
-    const { disabled, voice, volume, history } = this.state;
+    const { disabled, voice, history } = this.state;
 
     return <Grid style={{ bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }}>
     <Row>
@@ -67,7 +64,7 @@ export default class Main extends React.Component<IProps, IState> {
         <VoiceOption voices={voices} selected={voice} onChange={onVoiceChange} disabled={disabled} />
       </Col>
       <Col xs={6}>
-        <VolumeOption defaultVolume={volume} onChange={onVolumeChange} disabled={disabled} />
+        <VolumeOption disabled={disabled} ref={VOLUME} />
       </Col>
     </Row>
   </Grid>;
@@ -81,7 +78,9 @@ export default class Main extends React.Component<IProps, IState> {
     this.setState({ disabled: true });
 
     const { utterances } = this.props;
-    const { voice, volume } = this.state;
+    const { voice } = this.state;
+
+    const volume = (this.refs[VOLUME] as VolumeOption).volume;
 
     speak(text, voice, volume, utterances).then(() => {
       const { historyStorage } = this.props;
@@ -100,9 +99,6 @@ export default class Main extends React.Component<IProps, IState> {
     this.setState({ history });
   }
 
-  private onVolumeChange(volume: number): void {
-    this.setState({ volume });
-  }
   private onVoiceChange(voice: SpeechSynthesisVoice): void {
     this.setState({ voice });
   }

@@ -1,14 +1,13 @@
 import * as React from 'react';
 
 interface IProps {
-  defaultVolume: number;
-
   disabled: boolean;
-
-  onChange: (volume: number) => void;
 }
 interface IState {
 }
+
+const VOLUME_REF = 'volumeRef';
+const DEFAULT_VOLUME = 100;
 
 export default class VolumeOption extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -17,14 +16,12 @@ export default class VolumeOption extends React.Component<IProps, IState> {
   }
 
   public render(): JSX.Element {
-    const { defaultVolume, disabled } = this.props;
+    const { disabled } = this.props;
     return <input type='range' min='0' max='100' step='1'
-      defaultValue={defaultVolume}
-      onChange={this.onChange.bind(this)}
-      disabled={disabled} />;
+      defaultValue={DEFAULT_VOLUME} disabled={disabled} ref={VOLUME_REF} />;
   }
 
-  private onChange(e: React.FormEvent): void {
-    this.props.onChange((e.target as any).value / 100);
-  };
+  public get volume(): number {
+    return parseInt((this.refs[VOLUME_REF] as HTMLInputElement).value, 10) / 100;
+  }
 }
