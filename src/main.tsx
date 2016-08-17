@@ -1,5 +1,6 @@
 import HistoryStorage from './history-storage.ts';
 import History from './history.tsx';
+import PitchOption from './pitch-option.tsx';
 import Speak from './speak.tsx';
 import RateOption from './rate-option.tsx';
 import Utterances from './utterances.ts';
@@ -25,6 +26,7 @@ const SPEAK = 'speakRef';
 const VOLUME = 'volumeRefOption';
 const VOICE = 'voiceRefOption';
 const RATE = 'rateOptionRef';
+const PITCH = 'pitchOptionRef';
 
 export default class Main extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -68,6 +70,9 @@ export default class Main extends React.Component<IProps, IState> {
       <Col xs={6}>
         <RateOption disabled={disabled} ref={RATE} />
       </Col>
+      <Col xs={6}>
+        <PitchOption disabled={disabled} ref={PITCH} />
+      </Col>
     </Row>
   </Grid>;
   }
@@ -84,8 +89,9 @@ export default class Main extends React.Component<IProps, IState> {
     const volume = (this.refs[VOLUME] as VolumeOption).volume;
     const voice = (this.refs[VOICE] as VoiceOption).voice;
     const rate = (this.refs[RATE] as RateOption).rate;
+    const pitch = (this.refs[PITCH] as PitchOption).pitch;
 
-    speak(text, voice, volume, rate, utterances).then(() => {
+    speak(text, voice, volume, rate, pitch, utterances).then(() => {
       const { historyStorage } = this.props;
       historyStorage.add(text);
       const history = historyStorage.get();
@@ -103,11 +109,11 @@ export default class Main extends React.Component<IProps, IState> {
   }
 }
 
-function speak(text: string, voice: SpeechSynthesisVoice, volume: number, rate: number, utterances: Utterances): Promise<{}> {
+function speak(text: string, voice: SpeechSynthesisVoice, volume: number, rate: number, pitch: number, utterances: Utterances): Promise<{}> {
   if (text == null || text === '') {
     return Promise.reject<{}>(new Error('no text'));
   }
-  const [ utterance, utteranceIndex ] = utterances.create(text, voice, volume, rate);
+  const [ utterance, utteranceIndex ] = utterances.create(text, voice, volume, rate, pitch);
   const result = new Promise((resolve, reject) => {
     utterance.onend = resolve;
     utterance.onerror = reject;
