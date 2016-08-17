@@ -39,16 +39,15 @@ export default class Main extends React.Component<IProps, IState> {
       {history.map((history, i) => {
         const key = history + '-' + i.toString();
         return <li key={key} className='list-group-item'>
-          <ButtonToolbar>
-            <Button title={history} className={className} disabled={disabled}
-              data-value={history} onClick={onClick}>{history}</Button>
-            <ButtonGroup>
+          <Button title={history} className={className} disabled={disabled} block
+            data-value={history} onClick={onClick}>{history}
+            <ButtonGroup className='pull-right'>
               <Button className={className} disabled={disabled}
                 data-value={history} onClick={speak}><Glyphicon glyph='play' /></Button>
               <Button className={className} disabled={disabled}
                 data-value={history} onClick={remove}><Glyphicon glyph='remove' /></Button>
             </ButtonGroup>
-          </ButtonToolbar>
+          </Button>
         </li>;
       })}
     </ul>;
@@ -64,6 +63,7 @@ export default class Main extends React.Component<IProps, IState> {
 
   private speak(e: React.MouseEvent): void {
     e.preventDefault();
+    e.stopPropagation();
 
     const { speak } = this.props;
     const VALUE = 'value';
@@ -72,6 +72,7 @@ export default class Main extends React.Component<IProps, IState> {
 
   private remove(e: React.MouseEvent): void {
     e.preventDefault();
+    e.stopPropagation();
 
     const { remove } = this.props;
     const VALUE = 'value';
