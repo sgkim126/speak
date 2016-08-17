@@ -2,14 +2,13 @@ import * as React from 'react';
 
 interface IProps {
   voices: SpeechSynthesisVoice[];
-  selected: SpeechSynthesisVoice;
 
   disabled: boolean;
-
-  onChange: (voice: SpeechSynthesisVoice) => void;
 }
 interface IState {
 }
+
+const VOICE_REF = 'voiceRef';
 
 export default class VoiceOption extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -18,16 +17,16 @@ export default class VoiceOption extends React.Component<IProps, IState> {
   }
 
   public render(): JSX.Element {
-    const { voices, selected, disabled } = this.props;
-    return <select className='form-control' defaultValue={selected.name} onChange={this.onChange.bind(this)} disabled={disabled}>
+    const { voices, disabled } = this.props;
+    const selected = voices.find(voice => voice.default).name;
+
+    return <select className='form-control' defaultValue={selected} disabled={disabled} ref={VOICE_REF}>
     {voices.map(voice => <option key={voice.name} data-lang={voice.lang} data-name={voice.name}>{voice.name}</option>)}
     </select>;
   }
 
-  private onChange(e: React.FormEvent): void {
-    const { voices, onChange } = this.props;
-    const name = (e.target as any).value;
-    const voice = voices.find(voice => voice.name === name);
-    onChange(voice);
+  public get voice(): SpeechSynthesisVoice {
+    const name = (this.refs[VOICE_REF] as HTMLInputElement).value;
+    return this.props.voices.find(voice => voice.name === name);
   }
 }
