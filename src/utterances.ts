@@ -7,11 +7,12 @@ export default class Utterances {
     this.utterances = new Map<number, SpeechSynthesisUtterance>();
   }
 
-  public create(text: string, voice: SpeechSynthesisVoice, volume: number): [ SpeechSynthesisUtterance, number ] {
+  public create(text: string, voice: SpeechSynthesisVoice, volume: number, rate: number): [ SpeechSynthesisUtterance, number ] {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = voice;
     utterance.lang = voice.lang;
     utterance.volume = volume;
+    utterance.rate = rate;
 
     index += 1;
     this.utterances.set(index, utterance);

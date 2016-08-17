@@ -1,6 +1,7 @@
 import HistoryStorage from './history-storage.ts';
 import History from './history.tsx';
 import Speak from './speak.tsx';
+import RateOption from './rate-option.tsx';
 import Utterances from './utterances.ts';
 import VoiceOption from './voice-option.tsx';
 import VolumeOption from './volume-option.tsx';
@@ -23,6 +24,7 @@ const SPEAK = 'speakRef';
 
 const VOLUME = 'volumeRefOption';
 const VOICE = 'voiceRefOption';
+const RATE = 'rateOptionRef';
 
 export default class Main extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -63,6 +65,9 @@ export default class Main extends React.Component<IProps, IState> {
       <Col xs={6}>
         <VolumeOption disabled={disabled} ref={VOLUME} />
       </Col>
+      <Col xs={6}>
+        <RateOption disabled={disabled} ref={RATE} />
+      </Col>
     </Row>
   </Grid>;
   }
@@ -78,8 +83,9 @@ export default class Main extends React.Component<IProps, IState> {
 
     const volume = (this.refs[VOLUME] as VolumeOption).volume;
     const voice = (this.refs[VOICE] as VoiceOption).voice;
+    const rate = (this.refs[RATE] as RateOption).rate;
 
-    speak(text, voice, volume, utterances).then(() => {
+    speak(text, voice, volume, rate, utterances).then(() => {
       const { historyStorage } = this.props;
       historyStorage.add(text);
       const history = historyStorage.get();
@@ -97,11 +103,11 @@ export default class Main extends React.Component<IProps, IState> {
   }
 }
 
-function speak(text: string, voice: SpeechSynthesisVoice, volume: number, utterances: Utterances): Promise<{}> {
+function speak(text: string, voice: SpeechSynthesisVoice, volume: number, rate: number, utterances: Utterances): Promise<{}> {
   if (text == null || text === '') {
     return Promise.reject<{}>(new Error('no text'));
   }
-  const [ utterance, utteranceIndex ] = utterances.create(text, voice, volume);
+  const [ utterance, utteranceIndex ] = utterances.create(text, voice, volume, rate);
   const result = new Promise((resolve, reject) => {
     utterance.onend = resolve;
     utterance.onerror = reject;
