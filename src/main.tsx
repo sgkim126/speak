@@ -61,16 +61,19 @@ export default class Main extends React.Component<IProps, IState> {
       </Col>
     </Row>
     <Row style={{ bottom: 0, left: 0, position: 'absolute', right: 0 }}>
-      <Col xs={6} className='btn-group form-group'>
+      <Col xs={12} sm={6} md={3} className='btn-group form-group'>
         <VoiceOption voices={voices} disabled={disabled} ref={VOICE} />
       </Col>
-      <Col xs={6}>
+      <Col xs={2} sm={1} md={1}>Volume:</Col>
+      <Col xs={10} sm={5} md={2}>
         <VolumeOption disabled={disabled} ref={VOLUME} />
       </Col>
-      <Col xs={6}>
+      <Col xs={2} sm={1} md={1}>Rate:</Col>
+      <Col xs={10} sm={5} md={2}>
         <RateOption disabled={disabled} ref={RATE} />
       </Col>
-      <Col xs={6}>
+      <Col xs={2} sm={1} md={1}>Pitch:</Col>
+      <Col xs={10} sm={5} md={2}>
         <PitchOption disabled={disabled} ref={PITCH} />
       </Col>
     </Row>
