@@ -48,8 +48,8 @@
 
 	var history_storage_ts_1 = __webpack_require__(1);
 	var main_tsx_1 = __webpack_require__(2);
-	var unsupported_tsx_1 = __webpack_require__(434);
-	var utterances_ts_1 = __webpack_require__(435);
+	var unsupported_tsx_1 = __webpack_require__(436);
+	var utterances_ts_1 = __webpack_require__(437);
 	var React = __webpack_require__(4);
 	var ReactDOM = __webpack_require__(152);
 	function isSpeechSupport(window) {
@@ -161,13 +161,18 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var history_tsx_1 = __webpack_require__(3);
-	var speak_tsx_1 = __webpack_require__(431);
-	var voice_option_tsx_1 = __webpack_require__(432);
-	var volume_option_tsx_1 = __webpack_require__(433);
+	var pitch_option_tsx_1 = __webpack_require__(431);
+	var speak_tsx_1 = __webpack_require__(432);
+	var rate_option_tsx_1 = __webpack_require__(433);
+	var voice_option_tsx_1 = __webpack_require__(434);
+	var volume_option_tsx_1 = __webpack_require__(435);
 	var React = __webpack_require__(4);
 	var react_bootstrap_1 = __webpack_require__(38);
-	var DEFAULT_VOLUME = 100;
 	var SPEAK = 'speakRef';
+	var VOLUME = 'volumeRefOption';
+	var VOICE = 'voiceRefOption';
+	var RATE = 'rateOptionRef';
+	var PITCH = 'pitchOptionRef';
 
 	var Main = function (_React$Component) {
 	    _inherits(Main, _React$Component);
@@ -177,17 +182,11 @@
 
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
 
-	        var _this$props = _this.props;
-	        var historyStorage = _this$props.historyStorage;
-	        var voices = _this$props.voices;
+	        var historyStorage = _this.props.historyStorage;
 
 	        var history = historyStorage.get();
-	        var voice = voices.find(function (voice) {
-	            return voice.default;
-	        });
-	        var volume = DEFAULT_VOLUME;
 	        var disabled = false;
-	        _this.state = { history: history, voice: voice, volume: volume, disabled: disabled };
+	        _this.state = { history: history, disabled: disabled };
 	        return _this;
 	    }
 
@@ -197,13 +196,9 @@
 	            var speak = this.speak.bind(this);
 	            var remove = this.remove.bind(this);
 	            var onHistoryClick = this.onHistoryClick.bind(this);
-	            var onVolumeChange = this.onVolumeChange.bind(this);
-	            var onVoiceChange = this.onVoiceChange.bind(this);
 	            var voices = this.props.voices;
 	            var _state = this.state;
 	            var disabled = _state.disabled;
-	            var voice = _state.voice;
-	            var volume = _state.volume;
 	            var history = _state.history;
 
 	            return React.createElement(
@@ -232,13 +227,38 @@
 	                    { style: { bottom: 0, left: 0, position: 'absolute', right: 0 } },
 	                    React.createElement(
 	                        react_bootstrap_1.Col,
-	                        { xs: 6, className: 'btn-group form-group' },
-	                        React.createElement(voice_option_tsx_1.default, { voices: voices, selected: voice, onChange: onVoiceChange, disabled: disabled })
+	                        { xs: 12, sm: 6, md: 3, className: 'btn-group form-group' },
+	                        React.createElement(voice_option_tsx_1.default, { voices: voices, disabled: disabled, ref: VOICE })
 	                    ),
 	                    React.createElement(
 	                        react_bootstrap_1.Col,
-	                        { xs: 6 },
-	                        React.createElement(volume_option_tsx_1.default, { defaultVolume: volume, onChange: onVolumeChange, disabled: disabled })
+	                        { xs: 2, sm: 1, md: 1 },
+	                        'Volume:'
+	                    ),
+	                    React.createElement(
+	                        react_bootstrap_1.Col,
+	                        { xs: 10, sm: 5, md: 2 },
+	                        React.createElement(volume_option_tsx_1.default, { disabled: disabled, ref: VOLUME })
+	                    ),
+	                    React.createElement(
+	                        react_bootstrap_1.Col,
+	                        { xs: 2, sm: 1, md: 1 },
+	                        'Rate:'
+	                    ),
+	                    React.createElement(
+	                        react_bootstrap_1.Col,
+	                        { xs: 10, sm: 5, md: 2 },
+	                        React.createElement(rate_option_tsx_1.default, { disabled: disabled, ref: RATE })
+	                    ),
+	                    React.createElement(
+	                        react_bootstrap_1.Col,
+	                        { xs: 2, sm: 1, md: 1 },
+	                        'Pitch:'
+	                    ),
+	                    React.createElement(
+	                        react_bootstrap_1.Col,
+	                        { xs: 10, sm: 5, md: 2 },
+	                        React.createElement(pitch_option_tsx_1.default, { disabled: disabled, ref: PITCH })
 	                    )
 	                )
 	            );
@@ -255,11 +275,12 @@
 
 	            this.setState({ disabled: true });
 	            var utterances = this.props.utterances;
-	            var _state2 = this.state;
-	            var voice = _state2.voice;
-	            var volume = _state2.volume;
 
-	            _speak(text, voice, volume, utterances).then(function () {
+	            var volume = this.refs[VOLUME].volume;
+	            var voice = this.refs[VOICE].voice;
+	            var rate = this.refs[RATE].rate;
+	            var pitch = this.refs[PITCH].pitch;
+	            _speak(text, voice, volume, rate, pitch, utterances).then(function () {
 	                var historyStorage = _this2.props.historyStorage;
 
 	                historyStorage.add(text);
@@ -280,16 +301,6 @@
 	            var history = historyStorage.get();
 	            this.setState({ history: history });
 	        }
-	    }, {
-	        key: 'onVolumeChange',
-	        value: function onVolumeChange(volume) {
-	            this.setState({ volume: volume });
-	        }
-	    }, {
-	        key: 'onVoiceChange',
-	        value: function onVoiceChange(voice) {
-	            this.setState({ voice: voice });
-	        }
 	    }]);
 
 	    return Main;
@@ -297,12 +308,12 @@
 
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Main;
-	function _speak(text, voice, volume, utterances) {
+	function _speak(text, voice, volume, rate, pitch, utterances) {
 	    if (text == null || text === '') {
 	        return Promise.reject(new Error('no text'));
 	    }
 
-	    var _utterances$create = utterances.create(text, voice, volume);
+	    var _utterances$create = utterances.create(text, voice, volume, rate, pitch);
 
 	    var _utterances$create2 = _slicedToArray(_utterances$create, 2);
 
@@ -377,16 +388,12 @@
 	                        'li',
 	                        { key: key, className: 'list-group-item' },
 	                        React.createElement(
-	                            react_bootstrap_1.ButtonToolbar,
-	                            null,
-	                            React.createElement(
-	                                react_bootstrap_1.Button,
-	                                { title: history, className: className, disabled: disabled, 'data-value': history, onClick: onClick },
-	                                history
-	                            ),
+	                            react_bootstrap_1.Button,
+	                            { title: history, className: className, disabled: disabled, block: true, 'data-value': history, onClick: onClick },
+	                            history,
 	                            React.createElement(
 	                                react_bootstrap_1.ButtonGroup,
-	                                null,
+	                                { className: 'pull-right' },
 	                                React.createElement(
 	                                    react_bootstrap_1.Button,
 	                                    { className: className, disabled: disabled, 'data-value': history, onClick: speak },
@@ -416,6 +423,7 @@
 	        key: 'speak',
 	        value: function speak(e) {
 	            e.preventDefault();
+	            e.stopPropagation();
 	            var speak = this.props.speak;
 
 	            var VALUE = 'value';
@@ -425,6 +433,7 @@
 	        key: 'remove',
 	        value: function remove(e) {
 	            e.preventDefault();
+	            e.stopPropagation();
 	            var remove = this.props.remove;
 
 	            var VALUE = 'value';
@@ -40660,6 +40669,55 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var React = __webpack_require__(4);
+	var PITCH_REF = 'pitchRef';
+
+	var PitchOption = function (_React$Component) {
+	    _inherits(PitchOption, _React$Component);
+
+	    function PitchOption(props) {
+	        _classCallCheck(this, PitchOption);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PitchOption).call(this, props));
+
+	        _this.state = {};
+	        return _this;
+	    }
+
+	    _createClass(PitchOption, [{
+	        key: 'render',
+	        value: function render() {
+	            var disabled = this.props.disabled;
+
+	            return React.createElement('input', { type: 'range', min: '0', max: '2', step: '0.1', defaultValue: '1', disabled: disabled, ref: PITCH_REF });
+	        }
+	    }, {
+	        key: 'pitch',
+	        get: function get() {
+	            return parseInt(this.refs[PITCH_REF].value, 10);
+	        }
+	    }]);
+
+	    return PitchOption;
+	}(React.Component);
+
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = PitchOption;
+
+/***/ },
+/* 432 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var React = __webpack_require__(4);
 	var SEPAK_INPUT = 'speakInputRef';
 	var SPEAK_INPUT_NAME = 'speakInput';
 
@@ -40719,7 +40777,7 @@
 	exports.default = Speak;
 
 /***/ },
-/* 432 */
+/* 433 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40733,6 +40791,56 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var React = __webpack_require__(4);
+	var RATE_REF = 'rateRef';
+
+	var RateOption = function (_React$Component) {
+	    _inherits(RateOption, _React$Component);
+
+	    function RateOption(props) {
+	        _classCallCheck(this, RateOption);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RateOption).call(this, props));
+
+	        _this.state = {};
+	        return _this;
+	    }
+
+	    _createClass(RateOption, [{
+	        key: 'render',
+	        value: function render() {
+	            var disabled = this.props.disabled;
+
+	            return React.createElement('input', { type: 'range', min: '0', max: '4', step: '0.1', defaultValue: '1', disabled: disabled, ref: RATE_REF });
+	        }
+	    }, {
+	        key: 'rate',
+	        get: function get() {
+	            return parseInt(this.refs[RATE_REF].value, 10);
+	        }
+	    }]);
+
+	    return RateOption;
+	}(React.Component);
+
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = RateOption;
+
+/***/ },
+/* 434 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var React = __webpack_require__(4);
+	var VOICE_REF = 'voiceRef';
 
 	var VoiceOption = function (_React$Component) {
 	    _inherits(VoiceOption, _React$Component);
@@ -40751,12 +40859,14 @@
 	        value: function render() {
 	            var _props = this.props;
 	            var voices = _props.voices;
-	            var selected = _props.selected;
 	            var disabled = _props.disabled;
 
+	            var selected = voices.find(function (voice) {
+	                return voice.default;
+	            }).name;
 	            return React.createElement(
 	                'select',
-	                { className: 'form-control', defaultValue: selected.name, onChange: this.onChange.bind(this), disabled: disabled },
+	                { className: 'form-control', defaultValue: selected, disabled: disabled, ref: VOICE_REF },
 	                voices.map(function (voice) {
 	                    return React.createElement(
 	                        'option',
@@ -40767,17 +40877,12 @@
 	            );
 	        }
 	    }, {
-	        key: 'onChange',
-	        value: function onChange(e) {
-	            var _props2 = this.props;
-	            var voices = _props2.voices;
-	            var onChange = _props2.onChange;
-
-	            var name = e.target.value;
-	            var voice = voices.find(function (voice) {
+	        key: 'voice',
+	        get: function get() {
+	            var name = this.refs[VOICE_REF].value;
+	            return this.props.voices.find(function (voice) {
 	                return voice.name === name;
 	            });
-	            onChange(voice);
 	        }
 	    }]);
 
@@ -40788,7 +40893,7 @@
 	exports.default = VoiceOption;
 
 /***/ },
-/* 433 */
+/* 435 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40802,6 +40907,8 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var React = __webpack_require__(4);
+	var VOLUME_REF = 'volumeRef';
+	var DEFAULT_VOLUME = 100;
 
 	var VolumeOption = function (_React$Component) {
 	    _inherits(VolumeOption, _React$Component);
@@ -40818,16 +40925,14 @@
 	    _createClass(VolumeOption, [{
 	        key: 'render',
 	        value: function render() {
-	            var _props = this.props;
-	            var defaultVolume = _props.defaultVolume;
-	            var disabled = _props.disabled;
+	            var disabled = this.props.disabled;
 
-	            return React.createElement('input', { type: 'range', min: '0', max: '100', step: '1', defaultValue: defaultVolume, onChange: this.onChange.bind(this), disabled: disabled });
+	            return React.createElement('input', { type: 'range', min: '0', max: '100', step: '1', defaultValue: DEFAULT_VOLUME, disabled: disabled, ref: VOLUME_REF });
 	        }
 	    }, {
-	        key: 'onChange',
-	        value: function onChange(e) {
-	            this.props.onChange(e.target.value / 100);
+	        key: 'volume',
+	        get: function get() {
+	            return parseInt(this.refs[VOLUME_REF].value, 10) / 100;
 	        }
 	    }]);
 
@@ -40838,7 +40943,7 @@
 	exports.default = VolumeOption;
 
 /***/ },
-/* 434 */
+/* 436 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40888,7 +40993,7 @@
 	exports.default = Unsupported;
 
 /***/ },
-/* 435 */
+/* 437 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -40908,11 +41013,13 @@
 
 	    _createClass(Utterances, [{
 	        key: "create",
-	        value: function create(text, voice, volume) {
+	        value: function create(text, voice, volume, rate, pitch) {
 	            var utterance = new SpeechSynthesisUtterance(text);
 	            utterance.voice = voice;
 	            utterance.lang = voice.lang;
 	            utterance.volume = volume;
+	            utterance.rate = rate;
+	            utterance.pitch = pitch;
 	            index += 1;
 	            this.utterances.set(index, utterance);
 	            return [utterance, index];
