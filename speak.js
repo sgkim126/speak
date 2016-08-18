@@ -87,6 +87,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var KEY = 'SPEAK-IT-STORAGE';
+	var HISTORY_SIZE_LIMIT = 100;
 
 	var HistoryStorage = function () {
 	    function HistoryStorage(storage) {
@@ -117,6 +118,7 @@
 	            }
 	            var history = this.removedHistory(message);
 	            history.unshift(message);
+	            history = history.slice(0, HISTORY_SIZE_LIMIT);
 	            this.storage.setItem(KEY, JSON.stringify(history));
 	        }
 	    }, {
@@ -162,8 +164,8 @@
 
 	var history_tsx_1 = __webpack_require__(3);
 	var pitch_option_tsx_1 = __webpack_require__(431);
-	var speak_tsx_1 = __webpack_require__(432);
-	var rate_option_tsx_1 = __webpack_require__(433);
+	var rate_option_tsx_1 = __webpack_require__(432);
+	var speak_tsx_1 = __webpack_require__(433);
 	var voice_option_tsx_1 = __webpack_require__(434);
 	var volume_option_tsx_1 = __webpack_require__(435);
 	var React = __webpack_require__(4);
@@ -203,7 +205,7 @@
 
 	            return React.createElement(
 	                react_bootstrap_1.Grid,
-	                { style: { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 } },
+	                { className: 'container-fluid' },
 	                React.createElement(
 	                    react_bootstrap_1.Row,
 	                    null,
@@ -224,7 +226,7 @@
 	                ),
 	                React.createElement(
 	                    react_bootstrap_1.Row,
-	                    { style: { bottom: 0, left: 0, position: 'absolute', right: 0 } },
+	                    null,
 	                    React.createElement(
 	                        react_bootstrap_1.Col,
 	                        { xs: 12, sm: 6, md: 3, className: 'btn-group form-group' },
@@ -349,25 +351,28 @@
 
 	var React = __webpack_require__(4);
 	var react_bootstrap_1 = __webpack_require__(38);
+	var ITEM_PER_PAGE = 10;
 
-	var Main = function (_React$Component) {
-	    _inherits(Main, _React$Component);
+	var History = function (_React$Component) {
+	    _inherits(History, _React$Component);
 
-	    function Main(props) {
-	        _classCallCheck(this, Main);
+	    function History(props) {
+	        _classCallCheck(this, History);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Main).call(this, props));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(History).call(this, props));
 
-	        _this.state = {};
+	        var activePage = 1;
+	        _this.state = { activePage: activePage };
 	        return _this;
 	    }
 
-	    _createClass(Main, [{
+	    _createClass(History, [{
 	        key: 'render',
 	        value: function render() {
 	            var _props = this.props;
 	            var disabled = _props.disabled;
 	            var history = _props.history;
+	            var activePage = this.state.activePage;
 
 	            var className = function () {
 	                var className = [];
@@ -379,35 +384,47 @@
 	            var onClick = this.onClick.bind(this);
 	            var speak = this.speak.bind(this);
 	            var remove = this.remove.bind(this);
+	            var onPageSelect = this.onPageSelect.bind(this);
+	            var numberOfPages = Math.ceil(history.length / ITEM_PER_PAGE);
+	            var historyToShow = history.slice((activePage - 1) * ITEM_PER_PAGE, activePage * ITEM_PER_PAGE);
 	            return React.createElement(
-	                'ul',
-	                { className: 'list-group', style: { height: '80%', overflowX: 'hidden', overflowY: 'scroll' } },
-	                history.map(function (history, i) {
-	                    var key = history + '-' + i.toString();
-	                    return React.createElement(
-	                        'li',
-	                        { key: key, className: 'list-group-item' },
-	                        React.createElement(
-	                            react_bootstrap_1.Button,
-	                            { title: history, className: className, disabled: disabled, block: true, 'data-value': history, onClick: onClick },
-	                            history,
+	                'div',
+	                null,
+	                React.createElement(
+	                    'ul',
+	                    { className: 'list-group' },
+	                    historyToShow.map(function (history, i) {
+	                        var key = history + '-' + i.toString();
+	                        return React.createElement(
+	                            'li',
+	                            { key: key, className: 'list-group-item', style: { padding: '0' } },
 	                            React.createElement(
-	                                react_bootstrap_1.ButtonGroup,
-	                                { className: 'pull-right' },
+	                                react_bootstrap_1.Button,
+	                                { title: history, className: className, disabled: disabled, block: true, 'data-value': history, onClick: onClick, style: { border: '0px solid transparent' } },
+	                                history,
 	                                React.createElement(
-	                                    react_bootstrap_1.Button,
-	                                    { className: className, disabled: disabled, 'data-value': history, onClick: speak },
-	                                    React.createElement(react_bootstrap_1.Glyphicon, { glyph: 'play' })
-	                                ),
-	                                React.createElement(
-	                                    react_bootstrap_1.Button,
-	                                    { className: className, disabled: disabled, 'data-value': history, onClick: remove },
-	                                    React.createElement(react_bootstrap_1.Glyphicon, { glyph: 'remove' })
+	                                    react_bootstrap_1.ButtonGroup,
+	                                    { className: 'pull-right' },
+	                                    React.createElement(
+	                                        react_bootstrap_1.Button,
+	                                        { className: className, disabled: disabled, 'data-value': history, onClick: speak },
+	                                        React.createElement(react_bootstrap_1.Glyphicon, { glyph: 'play' })
+	                                    ),
+	                                    React.createElement(
+	                                        react_bootstrap_1.Button,
+	                                        { className: className, disabled: disabled, 'data-value': history, onClick: remove },
+	                                        React.createElement(react_bootstrap_1.Glyphicon, { glyph: 'remove' })
+	                                    )
 	                                )
 	                            )
-	                        )
-	                    );
-	                })
+	                        );
+	                    })
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'center-block text-center' },
+	                    React.createElement(react_bootstrap_1.Pagination, { items: numberOfPages, bsSize: 'medium', activePage: activePage, first: true, last: true, next: true, prev: true, onSelect: onPageSelect })
+	                )
 	            );
 	        }
 	    }, {
@@ -439,13 +456,18 @@
 	            var VALUE = 'value';
 	            remove(e.currentTarget.dataset[VALUE]);
 	        }
+	    }, {
+	        key: 'onPageSelect',
+	        value: function onPageSelect(activePage) {
+	            this.setState({ activePage: activePage });
+	        }
 	    }]);
 
-	    return Main;
+	    return History;
 	}(React.Component);
 
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Main;
+	exports.default = History;
 
 /***/ },
 /* 4 */
@@ -40718,6 +40740,55 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var React = __webpack_require__(4);
+	var RATE_REF = 'rateRef';
+
+	var RateOption = function (_React$Component) {
+	    _inherits(RateOption, _React$Component);
+
+	    function RateOption(props) {
+	        _classCallCheck(this, RateOption);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RateOption).call(this, props));
+
+	        _this.state = {};
+	        return _this;
+	    }
+
+	    _createClass(RateOption, [{
+	        key: 'render',
+	        value: function render() {
+	            var disabled = this.props.disabled;
+
+	            return React.createElement('input', { type: 'range', min: '0', max: '4', step: '0.1', defaultValue: '1', disabled: disabled, ref: RATE_REF });
+	        }
+	    }, {
+	        key: 'rate',
+	        get: function get() {
+	            return parseInt(this.refs[RATE_REF].value, 10);
+	        }
+	    }]);
+
+	    return RateOption;
+	}(React.Component);
+
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = RateOption;
+
+/***/ },
+/* 433 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var React = __webpack_require__(4);
 	var SEPAK_INPUT = 'speakInputRef';
 	var SPEAK_INPUT_NAME = 'speakInput';
 
@@ -40775,55 +40846,6 @@
 
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Speak;
-
-/***/ },
-/* 433 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var React = __webpack_require__(4);
-	var RATE_REF = 'rateRef';
-
-	var RateOption = function (_React$Component) {
-	    _inherits(RateOption, _React$Component);
-
-	    function RateOption(props) {
-	        _classCallCheck(this, RateOption);
-
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RateOption).call(this, props));
-
-	        _this.state = {};
-	        return _this;
-	    }
-
-	    _createClass(RateOption, [{
-	        key: 'render',
-	        value: function render() {
-	            var disabled = this.props.disabled;
-
-	            return React.createElement('input', { type: 'range', min: '0', max: '4', step: '0.1', defaultValue: '1', disabled: disabled, ref: RATE_REF });
-	        }
-	    }, {
-	        key: 'rate',
-	        get: function get() {
-	            return parseInt(this.refs[RATE_REF].value, 10);
-	        }
-	    }]);
-
-	    return RateOption;
-	}(React.Component);
-
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = RateOption;
 
 /***/ },
 /* 434 */
@@ -40976,7 +40998,7 @@
 	        value: function render() {
 	            return React.createElement(
 	                react_bootstrap_1.Jumbotron,
-	                { style: { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 } },
+	                { className: 'container-fluid' },
 	                React.createElement(
 	                    'h1',
 	                    null,
