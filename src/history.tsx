@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonGroup, ButtonToolbar, Glyphicon } from 'react-bootstrap';
+import { Button, ButtonGroup, Glyphicon, Pagination } from 'react-bootstrap';
 
 interface IProps {
   history: string[];
@@ -12,17 +12,23 @@ interface IProps {
 }
 
 interface IState {
+  activePage: number;
 }
+
+const ITEM_PER_PAGE = 20;
 
 export default class History extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
-    this.state = { };
+    const activePage = 1;
+    this.state = { activePage };
   }
 
   public render(): JSX.Element {
     const { disabled, history } = this.props;
+    const { activePage } = this.state;
+
     const className = (() => {
       const className = [] as string[];
       if (disabled) {
@@ -35,8 +41,15 @@ export default class History extends React.Component<IProps, IState> {
     const speak = this.speak.bind(this);
     const remove = this.remove.bind(this);
 
-    return <ul className='list-group' style={{height: '80%', overflowX: 'hidden', overflowY: 'scroll'}}>
-      {history.map((history, i) => {
+    const onPageSelect = this.onPageSelect.bind(this);
+
+    const numberOfPages = Math.ceil(history.length / ITEM_PER_PAGE);
+
+    const historyToShow = history.slice((activePage - 1) * ITEM_PER_PAGE, activePage * ITEM_PER_PAGE);
+
+    return <div>
+    <ul className='list-group' style={{height: '80%', overflowX: 'hidden', overflowY: 'scroll'}}>
+      {historyToShow.map((history, i) => {
         const key = history + '-' + i.toString();
         return <li key={key} className='list-group-item'>
           <Button title={history} className={className} disabled={disabled} block
@@ -50,7 +63,12 @@ export default class History extends React.Component<IProps, IState> {
           </Button>
         </li>;
       })}
-    </ul>;
+    </ul>
+    <div className='center-block text-center'>
+      <Pagination items={numberOfPages} bsSize='medium' activePage={activePage} first last next prev
+        onSelect={onPageSelect} />
+    </div>
+    </div>;
   }
 
   private onClick(e: React.MouseEvent): void {
@@ -77,5 +95,9 @@ export default class History extends React.Component<IProps, IState> {
     const { remove } = this.props;
     const VALUE = 'value';
     remove((e.currentTarget as HTMLButtonElement).dataset[VALUE]);
+  }
+
+  private onPageSelect(activePage: number): void {
+    this.setState({ activePage });
   }
 }
