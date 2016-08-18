@@ -1,8 +1,8 @@
 import HistoryStorage from './history-storage.ts';
 import History from './history.tsx';
 import PitchOption from './pitch-option.tsx';
-import Speak from './speak.tsx';
 import RateOption from './rate-option.tsx';
+import Speak from './speak.tsx';
 import Utterances from './utterances.ts';
 import VoiceOption from './voice-option.tsx';
 import VolumeOption from './volume-option.tsx';
@@ -112,7 +112,8 @@ export default class Main extends React.Component<IProps, IState> {
   }
 }
 
-function speak(text: string, voice: SpeechSynthesisVoice, volume: number, rate: number, pitch: number, utterances: Utterances): Promise<{}> {
+function speak(text: string, voice: SpeechSynthesisVoice,
+               volume: number, rate: number, pitch: number, utterances: Utterances): Promise<{}> {
   if (text == null || text === '') {
     return Promise.reject<{}>(new Error('no text'));
   }
