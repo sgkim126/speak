@@ -48,7 +48,7 @@ export default class History extends React.Component<IProps, IState> {
     const historyToShow = history.slice((activePage - 1) * ITEM_PER_PAGE, activePage * ITEM_PER_PAGE);
 
     return <div>
-    <ul className='list-group' style={{height: '80%', overflowX: 'hidden', overflowY: 'scroll'}}>
+    <ul className='list-group'>
       {historyToShow.map((history, i) => {
         const key = history + '-' + i.toString();
         return <li key={key} className='list-group-item'>

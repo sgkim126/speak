@@ -49,7 +49,7 @@ export default class Main extends React.Component<IProps, IState> {
     const { voices } = this.props;
     const { disabled, history } = this.state;
 
-    return <Grid style={{ bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 }}>
+    return <Grid className='container-fluid'>
     <Row>
       <Col xs={12}>
         <Speak speak={speak} disabled={disabled} ref={SPEAK}/>
@@ -60,7 +60,7 @@ export default class Main extends React.Component<IProps, IState> {
         <History history={history} disabled={disabled} onClick={onHistoryClick} speak={speak} remove={remove} />
       </Col>
     </Row>
-    <Row style={{ bottom: 0, left: 0, position: 'absolute', right: 0 }}>
+    <Row>
       <Col xs={12} sm={6} md={3} className='btn-group form-group'>
         <VoiceOption voices={voices} disabled={disabled} ref={VOICE} />
       </Col>
