@@ -15,7 +15,7 @@ interface IState {
   activePage: number;
 }
 
-const ITEM_PER_PAGE = 20;
+const ITEM_PER_PAGE = 10;
 
 export default class History extends React.Component<IProps, IState> {
   constructor(props: IProps) {
