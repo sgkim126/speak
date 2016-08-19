@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonGroup, Glyphicon, Pagination } from 'react-bootstrap';
+import { Button, ButtonGroup, Glyphicon, ListGroup, ListGroupItem, Pagination } from 'react-bootstrap';
 
 interface IProps {
   history: string[];
@@ -40,20 +40,18 @@ export default class History extends React.Component<IProps, IState> {
     const historyToShow = history.slice((activePage - 1) * ITEM_PER_PAGE, activePage * ITEM_PER_PAGE);
 
     return <div>
-    <ul className='list-group'>
+    <ListGroup>
       {historyToShow.map((history, i) => {
         const key = history + '-' + i.toString();
-        return <li key={key} className='list-group-item' style={{padding: '0'}}>
-          <Button title={history} disabled={disabled} block data-value={history} onClick={onClick}
-            style={{border: '0px solid transparent'}}>{history}
-            <ButtonGroup className='pull-right'>
-              <Button disabled={disabled} data-value={history} onClick={speak}><Glyphicon glyph='play' /></Button>
-              <Button disabled={disabled} data-value={history} onClick={remove}><Glyphicon glyph='remove' /></Button>
-            </ButtonGroup>
-          </Button>
-        </li>;
+        return <ListGroupItem key={key} className='list-group-item' title={history} data-value={history} onClick={onClick}>
+          {history}
+          <ButtonGroup className='pull-right'>
+            <Button disabled={disabled} data-value={history} onClick={speak}><Glyphicon glyph='play' /></Button>
+            <Button disabled={disabled} data-value={history} onClick={remove}><Glyphicon glyph='remove' /></Button>
+          </ButtonGroup>
+        </ListGroupItem>;
       })}
-    </ul>
+    </ListGroup>
     <div className='center-block text-center'>
       <Pagination items={numberOfPages} bsSize='medium' activePage={activePage} first last next prev
         onSelect={onPageSelect} />
@@ -64,7 +62,10 @@ export default class History extends React.Component<IProps, IState> {
   private onClick(e: React.MouseEvent): void {
     e.preventDefault();
 
-    const { onClick } = this.props;
+    const { disabled, onClick } = this.props;
+    if (disabled) {
+      return;
+    }
     const VALUE = 'value';
     onClick((e.target as HTMLButtonElement).dataset[VALUE]);
   }
