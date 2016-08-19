@@ -4,7 +4,7 @@ import Option from './option.tsx';
 import Speak from './speak.tsx';
 import Utterances from './utterances.ts';
 import * as React from 'react';
-import { Col, Grid, Row } from 'react-bootstrap';
+import { Col, Grid, Row, Well } from 'react-bootstrap';
 
 interface IProps {
   voices: SpeechSynthesisVoice[];
@@ -44,18 +44,20 @@ export default class Main extends React.Component<IProps, IState> {
 
     return <div className='container-fluid'>
       <Option voices={voices} disabled={disabled} ref={OPTION} />
-      <Grid fluid>
-        <Row>
-          <Col xs={12}>
-            <Speak speak={speak} disabled={disabled} ref={SPEAK}/>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <History history={history} disabled={disabled} onClick={onHistoryClick} speak={speak} remove={remove} />
-          </Col>
-        </Row>
-    </Grid>
+      <Well>
+        <Grid fluid>
+          <Row>
+            <Col xs={12}>
+              <Speak speak={speak} disabled={disabled} ref={SPEAK}/>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <History history={history} disabled={disabled} onClick={onHistoryClick} speak={speak} remove={remove} />
+            </Col>
+          </Row>
+        </Grid>
+      </Well>
   </div>;
   }
 
