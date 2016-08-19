@@ -2,6 +2,7 @@ import HistoryStorage from './history-storage.ts';
 import History from './history.tsx';
 import Option from './option.tsx';
 import Speak from './speak.tsx';
+import Stage from './stage.ts';
 import Utterances from './utterances.ts';
 import * as React from 'react';
 import { Col, Grid, Row, Well } from 'react-bootstrap';
@@ -15,7 +16,7 @@ interface IProps {
 interface IState {
   history?: string[];
 
-  disabled?: boolean;
+  stage?: Stage;
 }
 
 const SPEAK = 'speakRef';
@@ -28,9 +29,9 @@ export default class Main extends React.Component<IProps, IState> {
     const { historyStorage } = this.props;
 
     const history = historyStorage.get();
-    const disabled = false;
+    const stage = Stage.Idle;
 
-    this.state = { history, disabled };
+    this.state = { history, stage };
   }
 
   public render(): JSX.Element {
@@ -40,7 +41,9 @@ export default class Main extends React.Component<IProps, IState> {
     const onHistoryClick = this.onHistoryClick.bind(this);
 
     const { voices } = this.props;
-    const { disabled, history } = this.state;
+    const { stage, history } = this.state;
+
+    const disabled = stage === Stage.Speaking;
 
     return <div className='container-fluid'>
       <Option voices={voices} disabled={disabled} ref={OPTION} />
@@ -48,7 +51,7 @@ export default class Main extends React.Component<IProps, IState> {
         <Grid fluid>
           <Row>
             <Col xs={12}>
-              <Speak speak={speak} disabled={disabled} ref={SPEAK}/>
+              <Speak speak={speak} stage={stage} ref={SPEAK}/>
             </Col>
           </Row>
           <Row>
@@ -66,7 +69,7 @@ export default class Main extends React.Component<IProps, IState> {
   }
 
   private speak(text: string): void {
-    this.setState({ disabled: true });
+    this.setState({ stage: Stage.Speaking });
 
     const { utterances } = this.props;
 
@@ -83,7 +86,7 @@ export default class Main extends React.Component<IProps, IState> {
       const history = historyStorage.get();
       this.setState({ history });
     }).catch(e => console.log(e)).then(() => {
-      this.setState({ disabled: false });
+      this.setState({ stage: Stage.Idle });
     });
   }
 

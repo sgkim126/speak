@@ -1,7 +1,8 @@
+import Stage from './stage.ts';
 import * as React from 'react';
 
 interface IProps {
-  disabled: boolean;
+  stage: Stage;
 
   speak: (result: string) => void;
 }
@@ -19,7 +20,8 @@ export default class Speak extends React.Component<IProps, IState> {
 
   public render(): JSX.Element {
     const onSubmit = this.onSubmit.bind(this);
-    const {disabled } = this.props;
+    const {stage } = this.props;
+    const disabled = stage === Stage.Speaking;
 
     return <form className='input-group' onSubmit={onSubmit}>
       <input type='text' className='form-control' placeholder='Speak it' autoComplete='off' disabled={disabled}
