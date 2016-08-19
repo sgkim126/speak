@@ -1,11 +1,8 @@
 import HistoryStorage from './history-storage.ts';
 import History from './history.tsx';
-import PitchOption from './pitch-option.tsx';
-import RateOption from './rate-option.tsx';
+import Option from './option.tsx';
 import Speak from './speak.tsx';
 import Utterances from './utterances.ts';
-import VoiceOption from './voice-option.tsx';
-import VolumeOption from './volume-option.tsx';
 import * as React from 'react';
 import { Col, Grid, Row } from 'react-bootstrap';
 
@@ -22,11 +19,7 @@ interface IState {
 }
 
 const SPEAK = 'speakRef';
-
-const VOLUME = 'volumeRefOption';
-const VOICE = 'voiceRefOption';
-const RATE = 'rateOptionRef';
-const PITCH = 'pitchOptionRef';
+const OPTION = 'optionRef';
 
 export default class Main extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -49,35 +42,21 @@ export default class Main extends React.Component<IProps, IState> {
     const { voices } = this.props;
     const { disabled, history } = this.state;
 
-    return <Grid className='container-fluid'>
-    <Row>
-      <Col xs={12}>
-        <Speak speak={speak} disabled={disabled} ref={SPEAK}/>
-      </Col>
-    </Row>
-    <Row>
-      <Col xs={12}>
-        <History history={history} disabled={disabled} onClick={onHistoryClick} speak={speak} remove={remove} />
-      </Col>
-    </Row>
-    <Row>
-      <Col xs={12} sm={6} md={3} className='btn-group form-group'>
-        <VoiceOption voices={voices} disabled={disabled} ref={VOICE} />
-      </Col>
-      <Col xs={2} sm={1} md={1}>Volume:</Col>
-      <Col xs={10} sm={5} md={2}>
-        <VolumeOption disabled={disabled} ref={VOLUME} />
-      </Col>
-      <Col xs={2} sm={1} md={1}>Rate:</Col>
-      <Col xs={10} sm={5} md={2}>
-        <RateOption disabled={disabled} ref={RATE} />
-      </Col>
-      <Col xs={2} sm={1} md={1}>Pitch:</Col>
-      <Col xs={10} sm={5} md={2}>
-        <PitchOption disabled={disabled} ref={PITCH} />
-      </Col>
-    </Row>
-  </Grid>;
+    return <div className='container-fluid'>
+      <Option voices={voices} disabled={disabled} ref={OPTION} />
+      <Grid fluid>
+        <Row>
+          <Col xs={12}>
+            <Speak speak={speak} disabled={disabled} ref={SPEAK}/>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <History history={history} disabled={disabled} onClick={onHistoryClick} speak={speak} remove={remove} />
+          </Col>
+        </Row>
+    </Grid>
+  </div>;
   }
 
   private onHistoryClick(text: string): void {
@@ -89,10 +68,12 @@ export default class Main extends React.Component<IProps, IState> {
 
     const { utterances } = this.props;
 
-    const volume = (this.refs[VOLUME] as VolumeOption).volume;
-    const voice = (this.refs[VOICE] as VoiceOption).voice;
-    const rate = (this.refs[RATE] as RateOption).rate;
-    const pitch = (this.refs[PITCH] as PitchOption).pitch;
+    const option = this.refs[OPTION] as Option;
+
+    const voice = option.voice;
+    const volume = option.volume;
+    const rate = option.rate;
+    const pitch = option.pitch;
 
     speak(text, voice, volume, rate, pitch, utterances).then(() => {
       const { historyStorage } = this.props;
