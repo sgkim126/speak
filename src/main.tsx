@@ -36,6 +36,10 @@ export default class Main extends React.Component<IProps, IState> {
 
   public render(): JSX.Element {
     const speak = this.speak.bind(this);
+    const pause = this.pause.bind(this);
+    const resume = this.resume.bind(this);
+    const cancel = this.cancel.bind(this);
+
     const remove = this.remove.bind(this);
 
     const onHistoryClick = this.onHistoryClick.bind(this);
@@ -51,7 +55,7 @@ export default class Main extends React.Component<IProps, IState> {
         <Grid fluid>
           <Row>
             <Col xs={12}>
-              <Speak speak={speak} stage={stage} ref={SPEAK}/>
+              <Speak speak={speak} pause={pause} resume={resume} cancel={cancel} stage={stage} ref={SPEAK}/>
             </Col>
           </Row>
           <Row>
@@ -69,6 +73,7 @@ export default class Main extends React.Component<IProps, IState> {
   }
 
   private speak(text: string): void {
+    const stage = speechSynthesis.paused ? Stage.Paused : Stage.Speaking;
     this.setState({ stage: Stage.Speaking });
 
     const { utterances } = this.props;
@@ -80,13 +85,17 @@ export default class Main extends React.Component<IProps, IState> {
     const rate = option.rate;
     const pitch = option.pitch;
 
-    speak(text, voice, volume, rate, pitch, utterances).then(() => {
+    const onPause = this.onPause.bind(this);
+    const onResume = this.onResume.bind(this);
+
+    speak(text, voice, volume, rate, pitch, utterances, onPause, onResume).then(() => {
       const { historyStorage } = this.props;
       historyStorage.add(text);
       const history = historyStorage.get();
       this.setState({ history });
     }).catch(e => console.log(e)).then(() => {
-      this.setState({ stage: Stage.Idle });
+      const stage = speechSynthesis.paused ? Stage.Paused : Stage.Idle;
+      this.setState({ stage });
     });
   }
 
@@ -96,14 +105,34 @@ export default class Main extends React.Component<IProps, IState> {
     const history = historyStorage.get();
     this.setState({ history });
   }
+
+  private pause(): void {
+    speechSynthesis.pause();
+  }
+  private resume(): void {
+    speechSynthesis.resume();
+  }
+  private cancel(): void {
+    speechSynthesis.cancel();
+  }
+
+  private onPause(e: SpeechSynthesisEvent): void {
+    this.setState({ stage: Stage.Paused });
+  }
+  private onResume(e: SpeechSynthesisEvent): void {
+    this.setState({ stage: Stage.Speaking });
+  }
 }
 
 function speak(text: string, voice: SpeechSynthesisVoice,
-               volume: number, rate: number, pitch: number, utterances: Utterances): Promise<{}> {
+               volume: number, rate: number, pitch: number, utterances: Utterances,
+               onPause: (e: SpeechSynthesisEvent) => void, onResume: (e: SpeechSynthesisEvent) => void): Promise<{}> {
   if (text == null || text === '') {
     return Promise.reject<{}>(new Error('no text'));
   }
   const [ utterance, utteranceIndex ] = utterances.create(text, voice, volume, rate, pitch);
+  utterance.onpause = onPause;
+  utterance.onresume = onResume;
   const result = new Promise((resolve, reject) => {
     utterance.onend = resolve;
     utterance.onerror = reject;
