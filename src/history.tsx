@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, ButtonGroup, Glyphicon, ListGroup, ListGroupItem, Pagination } from 'react-bootstrap';
+import { Button, ButtonGroup, Glyphicon, Pagination } from 'react-bootstrap';
 
 interface IProps {
   history: string[];
@@ -39,19 +39,27 @@ export default class History extends React.Component<IProps, IState> {
 
     const historyToShow = history.slice((activePage - 1) * ITEM_PER_PAGE, activePage * ITEM_PER_PAGE);
 
+    const className = (() => {
+      const classList = [ 'list-group-item' ];
+      if (disabled) {
+        classList.push('disabled');
+      }
+      return classList.join(' ');
+    })();
+
     return <div>
-    <ListGroup>
+    <ul className='list-group'>
       {historyToShow.map((history, i) => {
         const key = history + '-' + i.toString();
-        return <ListGroupItem key={key} className='list-group-item' title={history} data-value={history} onClick={onClick}>
+        return <li key={key} className={className} title={history} data-value={history} onClick={onClick}>
           {history}
           <ButtonGroup className='pull-right'>
             <Button disabled={disabled} data-value={history} onClick={speak}><Glyphicon glyph='play' /></Button>
             <Button disabled={disabled} data-value={history} onClick={remove}><Glyphicon glyph='remove' /></Button>
           </ButtonGroup>
-        </ListGroupItem>;
+        </li>;
       })}
-    </ListGroup>
+    </ul>
     <div className='center-block text-center'>
       <Pagination items={numberOfPages} bsSize='medium' activePage={activePage} first last next prev
         onSelect={onPageSelect} />
