@@ -345,17 +345,24 @@
 	            var onPageSelect = this.onPageSelect.bind(this);
 	            var numberOfPages = Math.ceil(history.length / ITEM_PER_PAGE);
 	            var historyToShow = history.slice((activePage - 1) * ITEM_PER_PAGE, activePage * ITEM_PER_PAGE);
+	            var className = function () {
+	                var classList = ['list-group-item'];
+	                if (disabled) {
+	                    classList.push('disabled');
+	                }
+	                return classList.join(' ');
+	            }();
 	            return React.createElement(
 	                'div',
 	                null,
 	                React.createElement(
-	                    react_bootstrap_1.ListGroup,
-	                    null,
+	                    'ul',
+	                    { className: 'list-group' },
 	                    historyToShow.map(function (history, i) {
 	                        var key = history + '-' + i.toString();
 	                        return React.createElement(
-	                            react_bootstrap_1.ListGroupItem,
-	                            { key: key, className: 'list-group-item', title: history, 'data-value': history, onClick: onClick },
+	                            'li',
+	                            { key: key, className: className, title: history, 'data-value': history, onClick: onClick },
 	                            history,
 	                            React.createElement(
 	                                react_bootstrap_1.ButtonGroup,
